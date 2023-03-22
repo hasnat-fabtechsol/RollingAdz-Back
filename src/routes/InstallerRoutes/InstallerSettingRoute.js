@@ -8,6 +8,7 @@ router.post("/", async (req, res) => {
   try {
     const installerSetting = new InstallerSettingModel(req.body);
     await installerSetting.save();
+    res.send(installerSetting);
   } catch (err) {
     return res.status(422).send(err.message);
   }

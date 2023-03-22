@@ -1,8 +1,9 @@
 require("./models/User");
 
-// importing vehicle model
+// importing model
 require("./models/VehiclesModel/index");
 require("./models/InstallerModel/index");
+require("./models/DesignerModel/index");
 
 // vehicle routes
 const owerRegisterRoute = require("./routes/VehiclesRoutes/VehicleOwnerAccountRoute");
@@ -20,6 +21,14 @@ const installerPaymentRoute = require("./routes/InstallerRoutes/InstallerPayment
 const installerRequestRoue = require("./routes/InstallerRoutes/InstallerRequestRout");
 const installerScheduleRoute = require("./routes/InstallerRoutes/InstallerScheduleRoute");
 const installerSettingRoute = require("./routes/InstallerRoutes/InstallerSettingRoute");
+
+// Designer Routes
+
+const designerAccountRoute = require("./routes/DesignerRoutes/DesignerAccountRoute");
+const designerCompaignRoute = require("./routes/DesignerRoutes/DesignerCompaignRoute");
+const designerInvoiceRoute = require("./routes/DesignerRoutes/DesignerInvoiceRoute");
+const designerScheduleRoute = require("./routes/DesignerRoutes/DesignerScheduleRoute");
+const designerSettingRoute = require("./routes/DesignerRoutes/DesignerSettingRoute");
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -51,6 +60,13 @@ app.use("/installerPayment", installerPaymentRoute);
 app.use("/installerRequest", installerRequestRoue);
 app.use("/installerSchedule", installerScheduleRoute);
 app.use("/installerSetting", installerSettingRoute);
+
+// designer routes app
+app.use("/designerAccount", designerAccountRoute);
+app.use("/designerCompaign", designerCompaignRoute);
+app.use("/designerInvoice", designerInvoiceRoute);
+app.use("/designerSchedule", designerScheduleRoute);
+app.use("/designerSetting", designerSettingRoute);
 
 app.use("/", (req, res) => {
   res.send("Working");

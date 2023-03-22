@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const RequestSchema = new mongoose.Schema({
   date_time: {
-    type: Date,
+    type: String,
     required: true,
   },
   location: {

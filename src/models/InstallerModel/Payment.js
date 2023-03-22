@@ -25,10 +25,6 @@ const PaymentSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  address: {
-    type: String,
-    required: true,
-  },
   w9_document: {
     type: String,
     required: true,

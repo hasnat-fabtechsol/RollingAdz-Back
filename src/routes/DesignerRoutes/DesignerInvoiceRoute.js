@@ -1,16 +1,17 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const InstallerRequestModel = mongoose.model("InstallerRequest");
+const DesignerInvoicesModel = mongoose.model("DesignerInvoices");
 
 const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const installerRequest = new InstallerRequestModel(req.body);
-    await installerRequest.save();
-    res.send(installerRequest);
+    const DesignerInvoice = new DesignerInvoicesModel(req.body);
+    await DesignerInvoice.save();
+    res.send(DesignerInvoice);
   } catch (err) {
     return res.status(422).send(err.message);
   }
 });
+
 module.exports = router;

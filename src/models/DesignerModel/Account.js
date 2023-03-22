@@ -1,12 +1,5 @@
 const mongoose = require("mongoose");
 
-const Access = {
-  access_email: {
-    type: String,
-    requied: true,
-  },
-};
-
 const DesignerAccountSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -56,7 +49,10 @@ const DesignerAccountSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  Access,
+  access_email: {
+    type: String,
+    requied: true,
+  },
 });
 
 module.exports = mongoose.model("DesignerAccount", DesignerAccountSchema);
