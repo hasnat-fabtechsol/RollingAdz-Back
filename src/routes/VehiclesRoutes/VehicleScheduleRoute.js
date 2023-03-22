@@ -1,14 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const InstallerRequestModel = mongoose.model("InstallerRequest");
+const VehiclesScheduleModel = mongoose.model("VehiclesSchedule");
 
 const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const installerRequest = new InstallerRequestModel(req.body);
-    await installerRequest.save();
-    res.send(installerRequest);
+    const vehicleSchedule = new VehiclesScheduleModel(req.body);
+    await vehicleSchedule.save();
+    res.send(vehicleSchedule)
+
   } catch (err) {
     return res.status(422).send(err.message);
   }
@@ -16,7 +17,7 @@ router.post("/", async (req, res) => {
 
 router.get("/all", async (req, res) => {
   try {
-    const allAccounts = await InstallerRequestModel.find({});
+    const allAccounts = await VehiclesScheduleModel.find({});
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);
@@ -28,7 +29,7 @@ router.put("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await InstallerRequestModel.findOneAndUpdate(
+    const updatedDoc = await VehiclesScheduleModel.findOneAndUpdate(
       { _id: id },
       req.body,
       { new: true } // return the updated document
@@ -49,7 +50,7 @@ router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await InstallerRequestModel.findOneAndDelete({
+    const updatedDoc = await VehiclesScheduleModel.findOneAndDelete({
       _id: id,
     });
 

@@ -4,15 +4,16 @@ require("./models/User");
 require("./models/VehiclesModel/index");
 require("./models/InstallerModel/index");
 require("./models/DesignerModel/index");
+require("./models/PhotographerModel/index");
 
 // vehicle routes
 const owerRegisterRoute = require("./routes/VehiclesRoutes/VehicleOwnerAccountRoute");
-const vehicleData = require("./routes/VehiclesRoutes/VehicleData");
-const vehicleCampaign = require("./routes/VehiclesRoutes/VehicleCampaign");
-const vehiclePayment = require("./routes/VehiclesRoutes/VehiclePaymentRoute");
-const vehicleRequest = require("./routes/VehiclesRoutes/VehicleRequest");
-const vehicleSchedule = require("./routes/VehiclesRoutes/VehicleSchedule");
-const vehicleSetting = require("./routes/VehiclesRoutes/VehicleSetting");
+const vehicleData = require("./routes/VehiclesRoutes/VehicleDataRoute");
+const vehicleCampaign = require("./routes/VehiclesRoutes/VehicleCampaignRoute");
+const vehiclePayment = require("./routes/VehiclesRoutes/VehiclePaymentRouteRoute");
+const vehicleRequest = require("./routes/VehiclesRoutes/VehicleRequestRoute");
+const vehicleSchedule = require("./routes/VehiclesRoutes/VehicleScheduleRoute");
+const vehicleSetting = require("./routes/VehiclesRoutes/VehicleSettingRoute");
 
 // installer routes
 const installerAccountRoute = require("./routes/InstallerRoutes/InstallerAccountRoute");
@@ -29,6 +30,15 @@ const designerCompaignRoute = require("./routes/DesignerRoutes/DesignerCompaignR
 const designerInvoiceRoute = require("./routes/DesignerRoutes/DesignerInvoiceRoute");
 const designerScheduleRoute = require("./routes/DesignerRoutes/DesignerScheduleRoute");
 const designerSettingRoute = require("./routes/DesignerRoutes/DesignerSettingRoute");
+
+// Photographer routes
+
+const photographerAccountRoute = require("./routes/PhotographerRoutes/PhotographerAccountRoute");
+const photographerJobRoute = require("./routes/PhotographerRoutes/PhotographerJobRoute");
+const photographerPaymentRoute = require("./routes/PhotographerRoutes/PhotographerPaymentRoute");
+const photographerRequestRoute = require("./routes/PhotographerRoutes/PhotographerRequestRoute");
+const photographerScheduleRoute = require("./routes/PhotographerRoutes/PhotographerScheduleRoute");
+const photographerSettingRoute = require("./routes/PhotographerRoutes/PhotographerSettingRoute");
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -67,6 +77,15 @@ app.use("/designerCompaign", designerCompaignRoute);
 app.use("/designerInvoice", designerInvoiceRoute);
 app.use("/designerSchedule", designerScheduleRoute);
 app.use("/designerSetting", designerSettingRoute);
+
+/// photographer routes use
+
+app.use("/photographerAccount", photographerAccountRoute);
+app.use("/photographerJob", photographerJobRoute);
+app.use("/photographerRequest", photographerRequestRoute);
+app.use("/photographerPayment", photographerPaymentRoute);
+app.use("/photographerSchedule", photographerScheduleRoute);
+app.use("/photographerSetting", photographerSettingRoute);
 
 app.use("/", (req, res) => {
   res.send("Working");

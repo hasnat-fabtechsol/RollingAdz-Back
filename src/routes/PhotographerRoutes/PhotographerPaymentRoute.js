@@ -1,14 +1,18 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const InstallerRequestModel = mongoose.model("InstallerRequest");
+const uploadFile = require("../../components/uploadFile");
+const upload = require("../../middlewares/uploadMulter");
+const photographerPaymentModel = mongoose.model("PhotographerPayment");
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/", upload.single("w9_document"), async (req, res) => {
   try {
-    const installerRequest = new InstallerRequestModel(req.body);
-    await installerRequest.save();
-    res.send(installerRequest);
+    const imageUrl = await uploadFile(req.file.path);
+    req.body.w9_document = imageUrl;
+    const PhotographerPayment = new photographerPaymentModel(req.body);
+    await PhotographerPayment.save();
+    res.send(PhotographerPayment);
   } catch (err) {
     return res.status(422).send(err.message);
   }
@@ -16,7 +20,7 @@ router.post("/", async (req, res) => {
 
 router.get("/all", async (req, res) => {
   try {
-    const allAccounts = await InstallerRequestModel.find({});
+    const allAccounts = await photographerPaymentModel.find({});
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);
@@ -28,7 +32,7 @@ router.put("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await InstallerRequestModel.findOneAndUpdate(
+    const updatedDoc = await photographerPaymentModel.findOneAndUpdate(
       { _id: id },
       req.body,
       { new: true } // return the updated document
@@ -49,7 +53,7 @@ router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await InstallerRequestModel.findOneAndDelete({
+    const updatedDoc = await photographerPaymentModel.findOneAndDelete({
       _id: id,
     });
 

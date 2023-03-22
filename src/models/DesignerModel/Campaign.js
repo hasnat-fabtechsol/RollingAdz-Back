@@ -27,15 +27,15 @@ const DesignerCampaignSchema = new mongoose.Schema({
     required: true,
   },
   approved_on: {
-    type: Date,
+    type: String,
     required: true,
   },
   start_date: {
-    type: Date,
+    type: String,
     required: true,
   },
   end_date: {
-    type: Date,
+    type: String,
     required: true,
   },
   vehicle_impression: {
