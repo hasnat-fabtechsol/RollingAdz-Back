@@ -8,6 +8,7 @@ const requireAuth = require("../../middlewares/requireAuth");
 
 const router = express.Router();
 
+// Update or create vehicle owner registration data
 router.put(
   "/",
   requireAuth,
@@ -22,29 +23,29 @@ router.put(
       if (req.files) {
         for (let [key, value] of Object.entries(req.files)) {
           let result = await uploadFile(value[0]?.path);
-          // Add URL to updateData object
           updateData = { ...updateData, [key]: result };
         }
       }
-      VehiclesOwnerModel.findById({ user: _id }).then((register) => {
-        if (register) {
-          register.set({
-            ...req.body,
-            user_images: updateData,
-            user: _id,
-          });
-          register.save();
-          res.send(register.toJSON({ password: 0 }));
-        } else {
-          const owerRegister = new VehiclesOwnerModel({
-            ...req.body,
-            user_images: updateData,
-            user: _id,
-          });
-          owerRegister.save();
-          res.send(owerRegister.toJSON({ password: 0 }));
-        }
-      });
+      const register = await VehiclesOwnerModel.findOne({ user: _id }).populate(
+        "user"
+      );
+      if (register) {
+        register.set({
+          ...req.body,
+          user_images: updateData,
+          user: _id,
+        });
+        await register.save();
+        res.send(register.toJSON({ password: 0 }));
+      } else {
+        const owerRegister = new VehiclesOwnerModel({
+          ...req.body,
+          user_images: updateData,
+          user: _id,
+        });
+        await owerRegister.save();
+        res.send(owerRegister.toJSON({ password: 0 }));
+      }
     } catch (err) {
       return res.status(422).send(err.message);
     }

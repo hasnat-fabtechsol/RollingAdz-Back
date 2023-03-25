@@ -1,29 +1,33 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const InstallerRequestModel = mongoose.model("InstallerRequest");
-
+const User = mongoose.model("User");
+const requireAuth = require("../../middlewares/requireAuth");
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/", requireAuth, async (req, res) => {
   try {
-    const installerRequest = new InstallerRequestModel(req.body);
-    await installerRequest.save();
-    res.send(installerRequest);
+    const { _id } = req.user;
+    const request = new InstallerRequestModel({
+      ...req.body,
+      user: _id,
+    });
+    await request.save();
+    res.send(request, { password: 0 });
   } catch (err) {
     return res.status(422).send(err.message);
   }
 });
 
-router.get("/all", async (req, res) => {
-  try {
-    const allAccounts = await InstallerRequestModel.find({});
-    res.json(allAccounts);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
-  }
+router.get("/", requireAuth, async (req, res) => {
+  var { _id } = req.user;
+  InstallerRequestModel.find({ user: _id })
+    .populate("user", { password: 0 })
+    .exec(function (err, request) {
+      if (err) throw err;
+      res.send(request);
+    });
 });
-
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
 

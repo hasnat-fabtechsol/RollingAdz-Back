@@ -1,6 +1,26 @@
 const mongoose = require("mongoose");
 
-const rating = {
+const SettingSchema = new mongoose.Schema({
+  app_notification: {
+    type: Boolean,
+    required: true,
+  },
+  email_notification: {
+    type: Boolean,
+    required: true,
+  },
+  complete_install: {
+    type: Boolean,
+    required: true,
+  },
+  complete_removal: {
+    type: Boolean,
+    required: true,
+  },
+  complete_training: {
+    type: Boolean,
+    required: true,
+  },
   communication: {
     type: Number,
     required: true,
@@ -17,34 +37,10 @@ const rating = {
     type: Number,
     required: true,
   },
-};
-
-const certification = {
-  complete_install: {
-    type: Boolean,
-    required: true,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
-  complete_removal: {
-    type: Boolean,
-    required: true,
-  },
-  complete_training: {
-    type: Boolean,
-    required: true,
-  },
-};
-
-const SettingSchema = new mongoose.Schema({
-  app_notification: {
-    type: Boolean,
-    required: true,
-  },
-  email_notification: {
-    type: Boolean,
-    required: true,
-  },
-  rating,
-  certification,
 });
 
 module.exports = mongoose.model("InstallerSetting", SettingSchema);
