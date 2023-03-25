@@ -49,13 +49,21 @@ const VehiclesDataSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  route_type: {
+    type: String,
+    required: true,
+  },
   vehicle_type: {
     type: String,
     required: true,
   },
-  route_type: {
+  vehicle_size: {
     type: String,
     required: true,
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
 });
 

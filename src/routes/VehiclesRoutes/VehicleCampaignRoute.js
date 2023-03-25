@@ -3,11 +3,13 @@ const mongoose = require("mongoose");
 const uploadFile = require("../../components/uploadFile");
 const upload = require("../../middlewares/uploadMulter");
 const VehiclesCampaignModel = mongoose.model("VehiclesCampaign");
-
+const User = mongoose.model("User");
+const requireAuth = require("../../middlewares/requireAuth");
 const router = express.Router();
 
 router.post(
   "/",
+  requireAuth,
   upload.fields([
     { name: "campaign_img", maxCount: 1 },
     { name: "before_installation", maxCount: 1 },
@@ -18,6 +20,8 @@ router.post(
   ]),
   async (req, res, next) => {
     try {
+      const { _id } = req.user;
+      console.log(_id, "id");
       let updateData = {};
       if (req.files) {
         for (let [key, value] of Object.entries(req.files)) {
@@ -28,6 +32,7 @@ router.post(
       const vehicleCampaign = new VehiclesCampaignModel({
         ...req.body,
         compaign_photos: updateData,
+        user: _id,
       });
       await vehicleCampaign.save();
       res.send(vehicleCampaign);
@@ -37,14 +42,63 @@ router.post(
   }
 );
 
-router.get("/all", async (req, res) => {
-  try {
-    const allAccounts = await VehiclesCampaignModel.find({});
-    res.json(allAccounts);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
-  }
+// router.get("/all", async (req, res) => {
+//   // Get sorting criteria from frontend
+//   const sortField = req.query.sortField || "start_date";
+//   const sortDirection = req.query.sortDirection || "asc";
+
+//   // Construct sort object based on sorting criteria
+//   const sortObj = {};
+//   sortObj[sortField] = sortDirection === "asc" ? 1 : -1;
+//   console.log(sortObj);
+//   // Get all campaigns sorted by the specified field and direction
+//   VehiclesCampaignModel.find()
+//     .sort(sortObj)
+//     .exec((err, campaigns) => {
+//       if (err) {
+//         console.error(err);
+//       } else {
+//         // console.log(campaigns);
+//       }
+//     });
+//   VehiclesCampaignModel.find().exec(function (err, vehiclesOwner) {
+//     if (err) throw err;
+//     // console.log(vehiclesOwner);
+//     res.send(vehiclesOwner);
+//   });
+// });
+router.get("/", async (req, res) => {
+  // Get sorting criteria from frontend
+  const sortField = req.query.sortField || "start_date";
+  const sortDirection = req.query.sortDirection || "asc";
+
+  // Construct sort object based on sorting criteria
+  const sortObj = {};
+  sortObj[sortField] = sortDirection === "asc" ? 1 : -1;
+
+  // Get all campaigns sorted by the specified field and direction
+  VehiclesCampaignModel.find()
+    .sort(sortObj)
+    .exec((err, campaigns) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Error fetching campaigns");
+      } else {
+        res.send(campaigns);
+      }
+    });
+});
+
+router.get("/:id", async (req, res) => {
+  var { id } = req.params;
+
+  VehiclesCampaignModel.findOne({ _id: id })
+    .populate("user", { password: 0 })
+    .exec(function (err, vehiclesOwner) {
+      if (err) throw err;
+      console.log(vehiclesOwner);
+      res.send(vehiclesOwner);
+    });
 });
 
 router.put("/:id", async (req, res) => {
@@ -72,7 +126,9 @@ router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await VehiclesCampaignModel.findOneAndDelete({ _id: id });
+    const updatedDoc = await VehiclesCampaignModel.findOneAndDelete({
+      _id: id,
+    });
 
     if (!updatedDoc) {
       return res.status(404).json({ message: "Document not found" });

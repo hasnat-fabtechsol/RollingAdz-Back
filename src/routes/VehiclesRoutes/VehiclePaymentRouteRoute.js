@@ -3,29 +3,41 @@ const mongoose = require("mongoose");
 const uploadFile = require("../../components/uploadFile");
 const upload = require("../../middlewares/uploadMulter");
 const VehiclePaymentModel = mongoose.model("VehiclePayment");
+const User = mongoose.model("User");
+const requireAuth = require("../../middlewares/requireAuth");
 
 const router = express.Router();
 
-router.post("/", upload.single("w9_document"), async (req, res, next) => {
-  try {
-    const imageUrl = await uploadFile(req.file.path);
-    req.body.w9_document = imageUrl;
-    const vehiclePayemnt = new VehiclePaymentModel(req.body);
-    await vehiclePayemnt.save();
-    res.send(vehiclePayemnt);
-  } catch (err) {
-    return res.status(422).send(err.message);
+router.post(
+  "/",
+  requireAuth,
+  upload.single("w9_document"),
+  async (req, res, next) => {
+    try {
+      const { _id } = req.user;
+      const imageUrl = await uploadFile(req.file.path);
+      req.body.w9_document = imageUrl;
+      const vehiclePayemnt = new VehiclePaymentModel({
+        ...req.body,
+        user: _id,
+      });
+      await vehiclePayemnt.save();
+      res.send(vehiclePayemnt);
+    } catch (err) {
+      return res.status(422).send(err.message);
+    }
   }
-});
+);
 
-router.get("/all", async (req, res) => {
-  try {
-    const allAccounts = await VehiclesDataModel.find({});
-    res.json(allAccounts);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
-  }
+router.get("/:id", async (req, res) => {
+  var { id } = req.params;
+  VehiclePaymentModel.findOne({ _id: id })
+    .populate("user", { password: 0 })
+    .exec(function (err, vehiclesOwner) {
+      if (err) throw err;
+      console.log(vehiclesOwner);
+      res.send(vehiclesOwner);
+    });
 });
 
 router.put("/:id", async (req, res) => {
