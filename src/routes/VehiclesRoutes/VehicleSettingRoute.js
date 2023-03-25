@@ -1,22 +1,40 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const VehiclesSettingModel = mongoose.model("VehiclesSetting");
-
+const requireAuth = require("../../middlewares/requireAuth");
+const User = mongoose.model("User");
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.put("/", requireAuth, async (req, res, next) => {
   try {
-    const vehicleSetting = new VehiclesSettingModel(req.body);
-    await vehicleSetting.save();
-    res.send(vehicleSetting);
+    const { _id } = req.user;
+    VehiclesSettingModel.findById({ user: _id }).then((addSetting) => {
+      if (addSetting) {
+        addSetting.set({
+          ...req.body,
+          user: _id,
+        });
+        addSetting.save();
+        res.send(addSetting.toJSON({ password: 0 }));
+      } else {
+        const vehicleSetting = new VehiclesSettingModel({
+          ...req.body,
+          user: _id,
+        });
+        vehicleSetting.save();
+        res.send(vehicleSetting.toJSON({ password: 0 }));
+      }
+    });
   } catch (err) {
     return res.status(422).send(err.message);
   }
 });
 
-router.get("/all", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
+  const { _id } = req.user;
+
   try {
-    const allAccounts = await VehiclesSettingModel.find({});
+    const allAccounts = await VehiclesSettingModel.find({ user: _id });
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);

@@ -1,23 +1,29 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const VehiclesScheduleModel = mongoose.model("VehiclesSchedule");
-
+const requireAuth = require("../../middlewares/requireAuth");
+const User = mongoose.model("User");
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/", requireAuth, async (req, res) => {
+  const { _id } = req.user;
   try {
-    const vehicleSchedule = new VehiclesScheduleModel(req.body);
+    const vehicleSchedule = new VehiclesScheduleModel({
+      ...req.body,
+      user: _id,
+    });
     await vehicleSchedule.save();
-    res.send(vehicleSchedule)
-
+    res.send(vehicleSchedule, { password: 0 });
   } catch (err) {
     return res.status(422).send(err.message);
   }
 });
 
-router.get("/all", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
+  const { _id } = req.user;
+
   try {
-    const allAccounts = await VehiclesScheduleModel.find({});
+    const allAccounts = await VehiclesScheduleModel.find({ user: _id });
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);

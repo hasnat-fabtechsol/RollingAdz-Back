@@ -17,7 +17,6 @@ const VehiclesOwnerAccountSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  // user: [{ type: Schema.Types.ObjectId, ref: "User" }],
   dob: {
     type: String,
     required: true,

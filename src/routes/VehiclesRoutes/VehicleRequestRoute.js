@@ -1,23 +1,27 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const vehicleRequestModel = mongoose.model("vehicleRequest");
+const requireAuth = require("../../middlewares/requireAuth");
+const User = mongoose.model("User");
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/", requireAuth, async (req, res) => {
   try {
-    const vehicleRequest = new vehicleRequestModel(req.body);
+    const { _id } = req.user;
+    const vehicleRequest = new vehicleRequestModel({ ...req.body, user: _id });
     await vehicleRequest.save();
-    res.send(vehicleRequest);
+    res.send(vehicleRequest, { password: 0 });
   } catch (err) {
     return res.status(422).send(err.message);
   }
 });
 
-router.get("/all", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
+  const { _id } = req.user;
   try {
-    const allAccounts = await vehicleRequestModel.find({});
-    res.json(allAccounts);
+    const vehicleRequest = await vehicleRequestModel.find({ user: _id });
+    res.json(vehicleRequest);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
