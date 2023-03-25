@@ -41,6 +41,14 @@ const VehiclesPaymentSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  same_driver_licence: {
+    type: String,
+    required: true,
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 module.exports = mongoose.model("VehiclePayment", VehiclesPaymentSchema);

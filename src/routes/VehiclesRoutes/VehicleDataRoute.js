@@ -3,11 +3,14 @@ const mongoose = require("mongoose");
 const uploadFile = require("../../components/uploadFile");
 const upload = require("../../middlewares/uploadMulter");
 const VehiclesDataModel = mongoose.model("VehiclesData");
+const requireAuth = require("../../middlewares/requireAuth");
+const User = mongoose.model("User");
 
 const router = express.Router();
 
 router.post(
   "/",
+  requireAuth,
   upload.fields([
     { name: "front_side", maxCount: 1 },
     { name: "rear_side", maxCount: 1 },
@@ -16,6 +19,7 @@ router.post(
   ]),
   async (req, res, next) => {
     try {
+      const { _id } = req.user;
       let updateData = {};
       if (req.files) {
         for (let [key, value] of Object.entries(req.files)) {
@@ -26,6 +30,7 @@ router.post(
       const vehicleData = new VehiclesDataModel({
         ...req.body,
         VehiclesImages: updateData,
+        user: _id,
       });
       await vehicleData.save();
       res.send(vehicleData);
@@ -34,14 +39,15 @@ router.post(
     }
   }
 );
-router.get("/all", async (req, res) => {
-  try {
-    const allAccounts = await VehiclesDataModel.find({});
-    res.json(allAccounts);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
-  }
+router.get("/:id", async (req, res) => {
+  var { id } = req.params;
+  VehiclesDataModel.findOne({ _id: id })
+    .populate("user", { password: 0 })
+    .exec(function (err, vehiclesOwner) {
+      if (err) throw err;
+      console.log(vehiclesOwner);
+      res.send(vehiclesOwner);
+    });
 });
 
 router.put("/:id", async (req, res) => {
