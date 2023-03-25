@@ -39,9 +39,9 @@ router.post(
     }
   }
 );
-router.get("/:id", async (req, res) => {
-  var { id } = req.params;
-  VehiclesDataModel.findOne({ _id: id })
+router.get("/", requireAuth, async (req, res) => {
+  var { _id } = req.user;
+  VehiclesDataModel.find({ user: _id })
     .populate("user", { password: 0 })
     .exec(function (err, vehiclesOwner) {
       if (err) throw err;

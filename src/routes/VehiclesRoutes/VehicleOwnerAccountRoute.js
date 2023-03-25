@@ -8,6 +8,7 @@ const requireAuth = require("../../middlewares/requireAuth");
 
 const router = express.Router();
 
+// Update or create vehicle owner registration data
 router.put(
   "/",
   requireAuth,
@@ -25,22 +26,35 @@ router.put(
           updateData = { ...updateData, [key]: result };
         }
       }
-      const owerRegister = new VehiclesOwnerModel({
-        ...req.body,
-        user_images: updateData,
-        user: _id,
-      });
-      await owerRegister.save();
-      res.send(owerRegister, { password: 0 });
+      const register = await VehiclesOwnerModel.findOne({ user: _id }).populate(
+        "user"
+      );
+      if (register) {
+        register.set({
+          ...req.body,
+          user_images: updateData,
+          user: _id,
+        });
+        await register.save();
+        res.send(register.toJSON({ password: 0 }));
+      } else {
+        const owerRegister = new VehiclesOwnerModel({
+          ...req.body,
+          user_images: updateData,
+          user: _id,
+        });
+        await owerRegister.save();
+        res.send(owerRegister.toJSON({ password: 0 }));
+      }
     } catch (err) {
       return res.status(422).send(err.message);
     }
   }
 );
 
-router.get("/:id", async (req, res) => {
-  var { id } = req.params;
-  VehiclesOwnerModel.findOne({ _id: id })
+router.get("/", requireAuth, async (req, res) => {
+  var { _id } = req.user;
+  VehiclesOwnerModel.find({ user: _id })
     .populate("user", { password: 0 })
     .exec(function (err, vehiclesOwner) {
       if (err) throw err;
@@ -48,27 +62,6 @@ router.get("/:id", async (req, res) => {
       res.send(vehiclesOwner);
     });
 });
-
-// router.put("/:id", async (req, res) => {
-//   const { id } = req.params;
-
-//   try {
-//     const updatedDoc = await VehiclesOwnerModel.findOneAndUpdate(
-//       { _id: id },
-//       req.body,
-//       { new: true } // return the updated document
-//     );
-
-//     if (!updatedDoc) {
-//       return res.status(404).json({ message: "Document not found" });
-//     }
-
-//     return res.json(updatedDoc);
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: "Server error" });
-//   }
-// });
 
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;

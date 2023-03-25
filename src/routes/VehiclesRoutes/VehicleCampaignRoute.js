@@ -42,32 +42,8 @@ router.post(
   }
 );
 
-// router.get("/all", async (req, res) => {
-//   // Get sorting criteria from frontend
-//   const sortField = req.query.sortField || "start_date";
-//   const sortDirection = req.query.sortDirection || "asc";
-
-//   // Construct sort object based on sorting criteria
-//   const sortObj = {};
-//   sortObj[sortField] = sortDirection === "asc" ? 1 : -1;
-//   console.log(sortObj);
-//   // Get all campaigns sorted by the specified field and direction
-//   VehiclesCampaignModel.find()
-//     .sort(sortObj)
-//     .exec((err, campaigns) => {
-//       if (err) {
-//         console.error(err);
-//       } else {
-//         // console.log(campaigns);
-//       }
-//     });
-//   VehiclesCampaignModel.find().exec(function (err, vehiclesOwner) {
-//     if (err) throw err;
-//     // console.log(vehiclesOwner);
-//     res.send(vehiclesOwner);
-//   });
-// });
-router.get("/", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
+  const { _id } = req.user;
   // Get sorting criteria from frontend
   const sortField = req.query.sortField || "start_date";
   const sortDirection = req.query.sortDirection || "asc";
@@ -77,7 +53,7 @@ router.get("/", async (req, res) => {
   sortObj[sortField] = sortDirection === "asc" ? 1 : -1;
 
   // Get all campaigns sorted by the specified field and direction
-  VehiclesCampaignModel.find()
+  VehiclesCampaignModel.find({ user: _id })
     .sort(sortObj)
     .exec((err, campaigns) => {
       if (err) {

@@ -28,6 +28,15 @@ const compaign_photos = {
 };
 
 const CampaignSchema = new mongoose.Schema({
+  campaign_name: {
+    type: String,
+    required: true,
+  },
+  active: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   start_date: {
     type: String,
     required: true,

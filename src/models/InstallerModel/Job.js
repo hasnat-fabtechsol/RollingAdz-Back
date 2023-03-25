@@ -17,12 +17,16 @@ const photos = {
     type: String,
     required: true,
   },
-  url: {
-    type: String,
-  },
 };
 
 const JobSchema = new mongoose.Schema({
+  install_type: {
+    type: String,
+    required: true,
+  },
+  url: {
+    type: String,
+  },
   name: {
     type: String,
     required: true,
@@ -62,6 +66,10 @@ const JobSchema = new mongoose.Schema({
   package_tracking_number: {
     type: Number,
     required: true,
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   photos,
 });

@@ -1,12 +1,18 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const InstallerScheduleModel = mongoose.model("InstallerSchedule");
-
+const User = mongoose.model("User");
+const requireAuth = require("../../middlewares/requireAuth");
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/", requireAuth, async (req, res) => {
+  const { _id } = req.user;
+
   try {
-    const installerSchedule = new InstallerScheduleModel(req.body);
+    const installerSchedule = new InstallerScheduleModel({
+      ...req.body,
+      user: _id,
+    });
     await installerSchedule.save();
     res.send(installerSchedule);
   } catch (err) {
@@ -14,9 +20,11 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/all", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
+  const { _id } = req.user;
+  
   try {
-    const allAccounts = await InstallerScheduleModel.find({});
+    const allAccounts = await InstallerScheduleModel.find({ user: _id });
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);

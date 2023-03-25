@@ -1,27 +1,46 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const installerAccountModel = mongoose.model("InstallerAccount");
+const User = mongoose.model("User");
+const requireAuth = require("../../middlewares/requireAuth");
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.put("/", requireAuth, async (req, res, next) => {
   try {
-    const installerRegister = new installerAccountModel(req.body);
-    await installerRegister.save();
-    res.send(installerRegister);
+    const { _id } = req.user;
+    const register = await installerAccountModel
+      .findOne({ user: _id })
+      .populate("user");
+    if (register) {
+      register.set({
+        ...req.body,
+        user: _id,
+      });
+      await register.save();
+      res.send(register.toJSON({ password: 0 }));
+    } else {
+      const owerRegister = new installerAccountModel({
+        ...req.body,
+        user: _id,
+      });
+      await owerRegister.save();
+      res.send(owerRegister.toJSON({ password: 0 }));
+    }
   } catch (err) {
     return res.status(422).send(err.message);
   }
 });
 
-router.get("/all", async (req, res) => {
-  try {
-    const allAccounts = await installerAccountModel.find({});
-    res.json(allAccounts);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
-  }
+router.get("/", requireAuth, async (req, res) => {
+  const { _id } = req.user;
+  installerAccountModel
+    .find({ user: _id }, { password: 0 })
+    .populate("user", { password: 0 })
+    .exec(function (err, installerOwner) {
+      if (err) throw err;
+      res.send(installerOwner);
+    });
 });
 
 router.put("/:id", async (req, res) => {

@@ -3,19 +3,22 @@ const mongoose = require("mongoose");
 const uploadFile = require("../../components/uploadFile");
 const upload = require("../../middlewares/uploadMulter");
 const InstallerJobModel = mongoose.model("InstallerJob");
+const User = mongoose.model("User");
+const requireAuth = require("../../middlewares/requireAuth");
 
 const router = express.Router();
 
 router.post(
   "/",
+  requireAuth,
   upload.fields([
     { name: "img", maxCount: 1 },
     { name: "before", maxCount: 1 },
     { name: "after", maxCount: 1 },
     { name: "pdf", maxCount: 1 },
-    { name: "url", maxCount: 1 },
   ]),
-  async (req, res) => {
+  async (req, res, next) => {
+    const { _id } = req.user;
     try {
       let updateData = {};
       if (req.files) {
@@ -24,21 +27,24 @@ router.post(
           updateData = { ...updateData, [key]: result };
         }
       }
-      const installerJob = new InstallerJobModel({
+      const job = new InstallerJobModel({
         ...req.body,
         photos: updateData,
+        user: _id,
       });
-      await installerJob.save();
-      res.send(installerJob);
+      await job.save();
+      res.send(job.toJSON({ password: 0 }));
     } catch (err) {
       return res.status(422).send(err.message);
     }
   }
 );
 
-router.get("/all", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
   try {
-    const allAccounts = await InstallerJobModel.find({});
+    const allAccounts = await InstallerJobModel.find({}).populate("user", {
+      password: 0,
+    });
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);
