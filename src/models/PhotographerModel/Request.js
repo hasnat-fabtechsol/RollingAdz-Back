@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const RequestSchema = new mongoose.Schema({
+  request_type: {
+    type: String,
+    required: true,
+  },
   date_time: {
     type: String,
     required: true,
@@ -16,6 +20,14 @@ const RequestSchema = new mongoose.Schema({
   availability: {
     type: String,
     required: true,
+  },
+  confirm: {
+    type: Boolean,
+    required: true,
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
 });
 

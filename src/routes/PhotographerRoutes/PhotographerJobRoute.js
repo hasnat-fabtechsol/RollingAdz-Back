@@ -3,17 +3,21 @@ const mongoose = require("mongoose");
 const uploadFile = require("../../components/uploadFile");
 const upload = require("../../middlewares/uploadMulter");
 const photographerJobModel = mongoose.model("PhotographerJob");
+const User = mongoose.model("User");
+const requireAuth = require("../../middlewares/requireAuth");
 
 const router = express.Router();
 
 router.post(
   "/",
+  requireAuth,
   upload.fields([
     { name: "device_vehicle_info_img", maxCount: 1 },
     { name: "upload_photo", maxCount: 1 },
     { name: "invoice", maxCount: 1 },
   ]),
-  async (req, res) => {
+  async (req, res, next) => {
+    const { _id } = req.user;
     try {
       let updateData = {};
       if (req.files) {
@@ -22,21 +26,24 @@ router.post(
           updateData = { ...updateData, [key]: result };
         }
       }
-      const PhotographerJob = new photographerJobModel({
+      const job = new photographerJobModel({
         ...req.body,
         photos: updateData,
+        user: _id,
       });
-      await PhotographerJob.save();
-      res.send(PhotographerJob);
+      await job.save();
+      res.send(job.toJSON({ password: 0 }));
     } catch (err) {
       return res.status(422).send(err.message);
     }
   }
 );
 
-router.get("/all", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
   try {
-    const allAccounts = await photographerJobModel.find({});
+    const allAccounts = await photographerJobModel.find({}).populate("user", {
+      password: 0,
+    });
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);
