@@ -22,6 +22,15 @@ const images = {
 };
 
 const DesignerCampaignSchema = new mongoose.Schema({
+  campaign_name: {
+    type: String,
+    required: true,
+  },
+  active: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   approved_by_name: {
     type: String,
     required: true,
@@ -107,6 +116,10 @@ const DesignerCampaignSchema = new mongoose.Schema({
     required: true,
   },
   images,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 module.exports = mongoose.model("DesignerCampaign", DesignerCampaignSchema);

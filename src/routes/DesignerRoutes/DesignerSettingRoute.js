@@ -1,22 +1,42 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const DesignerSettingModel = mongoose.model("DesignerSetting");
-
+const requireAuth = require("../../middlewares/requireAuth");
+const User = mongoose.model("User");
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.put("/", requireAuth, async (req, res, next) => {
   try {
-    const DesignerSetting = new DesignerSettingModel(req.body);
-    await DesignerSetting.save();
-    res.send(DesignerSetting);
+    const { _id } = req.user;
+
+    const register = await DesignerSettingModel.findOne({
+      user: _id,
+    }).populate("user");
+    if (register) {
+      register.set({
+        ...req.body,
+        user: _id,
+      });
+      await register.save();
+      res.send(register.toJSON({ password: 0 }));
+    } else {
+      const setting = new DesignerSettingModel({
+        ...req.body,
+        user: _id,
+      });
+      await setting.save();
+      res.send(setting.toJSON({ password: 0 }));
+    }
   } catch (err) {
     return res.status(422).send(err.message);
   }
 });
 
-router.get("/all", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
+  const { _id } = req.user;
+
   try {
-    const allAccounts = await DesignerSettingModel.find({});
+    const allAccounts = await DesignerSettingModel.find({ user: _id });
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);

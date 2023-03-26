@@ -1,22 +1,30 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const DesignerScheduleModel = mongoose.model("DesignerSchedule");
+const requireAuth = require("../../middlewares/requireAuth");
+const User = mongoose.model("User");
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/", requireAuth, async (req, res) => {
+  const { _id } = req.user;
   try {
-    const DesignerSchedule = new DesignerScheduleModel(req.body);
-    await DesignerSchedule.save();
-    res.send(DesignerSchedule);
+    const Schedule = new DesignerScheduleModel({
+      ...req.body,
+      user: _id,
+    });
+    await Schedule.save();
+    res.send(Schedule, { password: 0 });
   } catch (err) {
     return res.status(422).send(err.message);
   }
 });
 
-router.get("/all", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
+  const { _id } = req.user;
+
   try {
-    const allAccounts = await DesignerScheduleModel.find({});
+    const allAccounts = await DesignerScheduleModel.find({ user: _id });
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);

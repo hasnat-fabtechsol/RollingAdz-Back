@@ -58,7 +58,6 @@ router.get("/", requireAuth, async (req, res) => {
     .populate("user", { password: 0 })
     .exec(function (err, vehiclesOwner) {
       if (err) throw err;
-      console.log(vehiclesOwner);
       res.send(vehiclesOwner);
     });
 });
