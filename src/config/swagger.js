@@ -1,6 +1,5 @@
 const swaggerAutogen = require('swagger-autogen')();
 const dotenv = require("dotenv").config();
-const swaggerModelValidator = require('swagger-model-validator');
 const mongoose = require("mongoose");
 const requireDir = require("require-dir");
 requireDir("../models", { recurse: true });
@@ -13,15 +12,14 @@ const doc = {
     description: 'Description',
   },
   host: `localhost:${process.env.PORT||5000}`,
-  schemes: ['http'],
+  schemes: ['http',"https"],
+  consumes: ['application/json'],
+  produces: ['application/json'],
   definitions:{}
 };
-for (const model of Object.values(mongoose.models)) {
-  const modelName = model.modelName;
-  const schema = mongoose.modelSchemas[modelName];
-  doc.definitions[modelName] = {
-    properties: schema.obj,
-  };
+  for (const [modelName, model] of Object.entries(mongoose.models)) {
+
+  doc.definitions[modelName] =  model.schema.obj;
 }
 
 swaggerAutogen(outputFile, endpointsFiles, doc);
