@@ -1,11 +1,9 @@
-require("./models/User");
 
-// importing model
-require("./models/VehiclesModel/index");
-require("./models/InstallerModel/index");
-require("./models/DesignerModel/index");
-require("./models/PhotographerModel/index");
+const requireDir = require("require-dir");
+requireDir("./models", { recurse: true });
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument=require("./config/swagger-output.json")
 // vehicle routes
 const owerRegisterRoute = require("./routes/VehiclesRoutes/VehicleOwnerAccountRoute");
 const vehicleData = require("./routes/VehiclesRoutes/VehicleDataRoute");
@@ -51,6 +49,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("src/images"));
 app.use(express.urlencoded({ extended: true }));
+if(process.env.API_DEBUG){
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+}
 app.use("/user", authRoutes);
 
 // vehicles routes use
