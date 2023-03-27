@@ -1,22 +1,42 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const photographerSettingModel = mongoose.model("PhotographerSetting");
+const User = mongoose.model("User");
+const requireAuth = require("../../middlewares/requireAuth");
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.put("/", requireAuth, async (req, res, next) => {
   try {
-    const PhotographerSetting = new photographerSettingModel(req.body);
-    await PhotographerSetting.save();
-    res.send(PhotographerSetting);
+    const { _id } = req.user;
+
+    const register = await photographerSettingModel.findOne({
+      user: _id,
+    }).populate("user");
+    if (register) {
+      register.set({
+        ...req.body,
+        user: _id,
+      });
+      await register.save();
+      res.send(register.toJSON({ password: 0 }));
+    } else {
+      const setting = new photographerSettingModel({
+        ...req.body,
+        user: _id,
+      });
+      await setting.save();
+      res.send(setting.toJSON({ password: 0 }));
+    }
   } catch (err) {
     return res.status(422).send(err.message);
   }
 });
 
-router.get("/all", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
+  var { _id } = req.user;
   try {
-    const allAccounts = await photographerSettingModel.find({});
+    const allAccounts = await photographerSettingModel.find({ user: _id });
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);
