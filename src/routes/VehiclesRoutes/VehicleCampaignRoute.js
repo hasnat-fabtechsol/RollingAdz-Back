@@ -53,7 +53,7 @@ router.get("/", requireAuth, async (req, res) => {
   sortObj[sortField] = sortDirection === "asc" ? 1 : -1;
 
   // Get all campaigns sorted by the specified field and direction
-  VehiclesCampaignModel.find({ user: _id })
+  VehiclesCampaignModel.findOne({ user: _id })
     .sort(sortObj)
     .exec((err, campaigns) => {
       if (err) {
