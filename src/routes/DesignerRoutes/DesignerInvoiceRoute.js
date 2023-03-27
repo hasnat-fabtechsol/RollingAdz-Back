@@ -1,20 +1,26 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const DesignerInvoicesModel = mongoose.model("DesignerInvoices");
+const User = mongoose.model("User");
+const requireAuth = require("../../middlewares/requireAuth");
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/", requireAuth, async (req, res, next) => {
   try {
-    const DesignerInvoice = new DesignerInvoicesModel(req.body);
-    await DesignerInvoice.save();
-    res.send(DesignerInvoice);
+    const { _id } = req.user;
+    const designerInvoice = new DesignerInvoicesModel({
+      ...req.body,
+      user: _id,
+    });
+    await designerInvoice.save();
+    res.send(designerInvoice);
   } catch (err) {
     return res.status(422).send(err.message);
   }
 });
 
-router.get("/all", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const allAccounts = await DesignerInvoicesModel.find({});
     res.json(allAccounts);

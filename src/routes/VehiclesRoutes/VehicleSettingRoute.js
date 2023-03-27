@@ -8,23 +8,25 @@ const router = express.Router();
 router.put("/", requireAuth, async (req, res, next) => {
   try {
     const { _id } = req.user;
-    VehiclesSettingModel.findById({ user: _id }).then((addSetting) => {
-      if (addSetting) {
-        addSetting.set({
-          ...req.body,
-          user: _id,
-        });
-        addSetting.save();
-        res.send(addSetting.toJSON({ password: 0 }));
-      } else {
-        const vehicleSetting = new VehiclesSettingModel({
-          ...req.body,
-          user: _id,
-        });
-        vehicleSetting.save();
-        res.send(vehicleSetting.toJSON({ password: 0 }));
-      }
-    });
+
+    const register = await VehiclesSettingModel.findOne({
+      user: _id,
+    }).populate("user");
+    if (register) {
+      register.set({
+        ...req.body,
+        user: _id,
+      });
+      await register.save();
+      res.send(register.toJSON({ password: 0 }));
+    } else {
+      const setting = new VehiclesSettingModel({
+        ...req.body,
+        user: _id,
+      });
+      await setting.save();
+      res.send(setting.toJSON({ password: 0 }));
+    }
   } catch (err) {
     return res.status(422).send(err.message);
   }

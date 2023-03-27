@@ -3,11 +3,13 @@ const mongoose = require("mongoose");
 const uploadFile = require("../../components/uploadFile");
 const upload = require("../../middlewares/uploadMulter");
 const DesignerCampaignModel = mongoose.model("DesignerCampaign");
+const User = mongoose.model("User");
+const requireAuth = require("../../middlewares/requireAuth");
 
 const router = express.Router();
-
 router.post(
   "/",
+  requireAuth,
   upload.fields([
     { name: "file", maxCount: 1 },
     { name: "campaign_image", maxCount: 1 },
@@ -16,6 +18,7 @@ router.post(
   ]),
   async (req, res, next) => {
     try {
+      const { _id } = req.user;
       let updateData = {};
       if (req.files) {
         for (let [key, value] of Object.entries(req.files)) {
@@ -23,27 +26,44 @@ router.post(
           updateData = { ...updateData, [key]: result };
         }
       }
-      // const vehicleCampaign = new VehiclesCampaignModel(req.body);
-      const DesignerCampaign = new DesignerCampaignModel({
+      const register = await DesignerCampaignModel.findOne({
+        user: _id,
+      }).populate("user", { password: 0 });
+
+      const owerRegister = new DesignerCampaignModel({
         ...req.body,
         images: updateData,
+        user: _id,
       });
-      await DesignerCampaign.save();
-      res.send(DesignerCampaign);
+      await owerRegister.save();
+      res.send(owerRegister.toJSON({ password: 0 }));
     } catch (err) {
       return res.status(422).send(err.message);
     }
   }
 );
 
-router.get("/all", async (req, res) => {
-  try {
-    const allAccounts = await DesignerCampaignModel.find({});
-    res.json(allAccounts);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
-  }
+router.get("/", requireAuth, async (req, res) => {
+  const { _id } = req.user;
+  // Get sorting criteria from frontend
+  const sortField = req.query.sortField || "start_date";
+  const sortDirection = req.query.sortDirection || "asc";
+
+  // Construct sort object based on sorting criteria
+  const sortObj = {};
+  sortObj[sortField] = sortDirection === "asc" ? 1 : -1;
+
+  // Get all campaigns sorted by the specified field and direction
+  DesignerCampaignModel.find({ user: _id })
+    .sort(sortObj)
+    .exec((err, campaigns) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Error fetching campaigns");
+      } else {
+        res.send(campaigns);
+      }
+    });
 });
 
 router.put("/:id", async (req, res) => {

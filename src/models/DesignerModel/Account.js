@@ -53,6 +53,10 @@ const DesignerAccountSchema = new mongoose.Schema({
     type: String,
     requied: true,
   },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 module.exports = mongoose.model("DesignerAccount", DesignerAccountSchema);
