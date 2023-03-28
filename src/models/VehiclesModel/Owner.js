@@ -12,10 +12,14 @@ const user_images = {
 };
 
 const VehiclesOwnerAccountSchema = new mongoose.Schema({
-  user_images,
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+  firstname: {
+    type: String,
+  },
+  lastname: {
+    type: String,
+  },
+  password: {
+    type: String,
   },
   dob: {
     type: String,
@@ -28,6 +32,11 @@ const VehiclesOwnerAccountSchema = new mongoose.Schema({
   phone_number: {
     type: Number,
     required: true,
+  },
+  user_images,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
 });
 

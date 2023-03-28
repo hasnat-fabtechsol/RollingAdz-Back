@@ -11,16 +11,9 @@ router.put("/", requireAuth, async (req, res) => {
     for (let [key, value] of Object.entries(req.body)) {
       if (value) updateData = { ...updateData, [key]: value };
     }
-
-    if (req.files) {
-      for (let [key, value] of Object.entries(req.files)) {
-        let result = await uploadFile(value[0]?.path);
-        updateData = { ...updateData, [key]: result };
-      }
-    }
     var data;
     var oldData = await VehiclesSettingModel.findOne({ user: req.user._id });
-    if (oldData)
+    if (oldData) {
       data = await VehiclesSettingModel.findOneAndUpdate(
         { user: req.user._id },
         updateData,
@@ -28,8 +21,8 @@ router.put("/", requireAuth, async (req, res) => {
           new: true,
         }
       );
-    else {
-      data = new VehiclesSettingModel(updateData);
+    } else {
+      data = new VehiclesSettingModel({ ...updateData, user: req.user._id });
       data.save();
     }
 

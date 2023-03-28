@@ -27,11 +27,11 @@ router.put(
           let result = await uploadFile(value[0]?.path);
           updateData = { ...updateData, [key]: result };
         }
-        //
       }
       var data;
+      var user;
       var oldData = await VehiclesOwnerModel.findOne({ user: req.user._id });
-      if (oldData)
+      if (oldData) {
         data = await VehiclesOwnerModel.findOneAndUpdate(
           { user: req.user._id },
           updateData,
@@ -39,12 +39,30 @@ router.put(
             new: true,
           }
         );
-      else {
-        data = new VehiclesOwnerModel(updateData);
+        user = await User.findOneAndUpdate(
+          { _id: req.user._id },
+          {
+            firstname: data.firstname,
+            lastname: data.lastname,
+            password: data.password,
+          },
+          {
+            new: true,
+          }
+        );
+      } else {
+        data = new VehiclesOwnerModel({ ...updateData, user: req.user._id });
         data.save();
+        user = new User({
+          _id: req.user._id,
+          firstname: updateData.firstname,
+          lastname: updateData.lastname,
+          password: updateData.password,
+        });
+        await user.save();
       }
 
-      res.send(data);
+      res.send(data, user, { password: 0 });
     } catch (err) {
       console.log(err.message);
       return res.status(422).send(err.message);

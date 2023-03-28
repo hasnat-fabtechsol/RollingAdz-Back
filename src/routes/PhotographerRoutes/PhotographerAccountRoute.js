@@ -6,43 +6,74 @@ const requireAuth = require("../../middlewares/requireAuth");
 
 const router = express.Router();
 
-router.put("/", requireAuth, async (req, res, next) => {
+router.put("/", requireAuth, async (req, res) => {
   try {
-    const { _id } = req.user;
-    const register = await photographerAccountModel
-      .findOne({ user: _id })
-      .populate("user");
-    console.log(register, "egister");
-    if (register) {
-      register.set({
-        ...req.body,
-        user: _id,
-      });
-      await register.save();
-      res.send(register.toJSON({ password: 0 }));
-    } else {
-      const owerRegister = new photographerAccountModel({
-        ...req.body,
-        user: _id,
-      });
-      await owerRegister.save();
-      res.send(owerRegister.toJSON({ password: 0 }));
+    var updateData = {};
+    for (let [key, value] of Object.entries(req.body)) {
+      if (value) updateData = { ...updateData, [key]: value };
     }
+    var data;
+    var oldData = await photographerAccountModel.findOne({
+      user: req.user._id,
+    });
+    var data;
+    var user;
+    var oldData = await photographerAccountModel.findOne({
+      user: req.user._id,
+    });
+    if (oldData) {
+      data = await photographerAccountModel.findOneAndUpdate(
+        { user: req.user._id },
+        updateData,
+        {
+          new: true,
+        }
+      );
+      user = await User.findOneAndUpdate(
+        { _id: req.user._id },
+        {
+          firstname: data.firstname,
+          lastname: data.lastname,
+          password: data.password,
+          role: updateData.role,
+        },
+        {
+          new: true,
+        }
+      );
+    } else {
+      data = new photographerAccountModel({
+        ...updateData,
+        user: req.user._id,
+      });
+      data.save();
+      user = new User({
+        _id: req.user._id,
+        firstname: updateData.firstname,
+        lastname: updateData.lastname,
+        password: updateData.password,
+        role: updateData.role,
+      });
+      await user.save();
+    }
+
+    res.send(data, user);
   } catch (err) {
+    console.log(err.message);
     return res.status(422).send(err.message);
   }
 });
 
 router.get("/", requireAuth, async (req, res) => {
-  var { _id } = req.user;
-  photographerAccountModel
-    .find({ user: _id })
-    .populate("user", { password: 0 })
-    .exec(function (err, designerAccount) {
-      if (err) throw err;
-      console.log(designerAccount);
-      res.send(designerAccount);
+  try {
+    const allAccounts = await photographerAccountModel.findOne({
+      user: req.user._id,
     });
+    res.json(allAccounts);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
 });
 
 router.put("/:id", async (req, res) => {
