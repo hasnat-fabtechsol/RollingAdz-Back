@@ -30,8 +30,7 @@ router.post(
         }
       }
       const vehicleCampaign = new VehiclesCampaignModel({
-        ...req.body,
-        compaign_photos: updateData,
+        ...updateData,
         user: _id,
       });
       await vehicleCampaign.save();
@@ -65,7 +64,7 @@ router.get("/", requireAuth, async (req, res) => {
     });
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", requireAuth, async (req, res) => {
   var { id } = req.params;
 
   VehiclesCampaignModel.findOne({ _id: id })
@@ -77,7 +76,7 @@ router.get("/:id", async (req, res) => {
     });
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireAuth, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -98,7 +97,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAuth, async (req, res) => {
   const { id } = req.params;
 
   try {

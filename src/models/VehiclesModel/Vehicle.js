@@ -57,9 +57,8 @@ const VehiclesDataSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  vehicle_size: {
+  vehicle_length: {
     type: String,
-    required: true,
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,

@@ -1,21 +1,28 @@
 const mongoose = require("mongoose");
 
-const user_images = {
+// const user_images = {
+//   img: {
+//     type: String,
+//     required: true,
+//   },
+//   profile_image: {
+//     type: String,
+//     required: true,
+//   },
+// };
+
+const VehiclesOwnerAccountSchema = new mongoose.Schema({
   img: {
     type: String,
     required: true,
   },
-  profile_image: {
-    type: String,
-    required: true,
-  },
-};
-
-const VehiclesOwnerAccountSchema = new mongoose.Schema({
   firstname: {
     type: String,
   },
   lastname: {
+    type: String,
+  },
+  email: {
     type: String,
   },
   password: {
@@ -33,7 +40,7 @@ const VehiclesOwnerAccountSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  user_images,
+  // user_images,
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

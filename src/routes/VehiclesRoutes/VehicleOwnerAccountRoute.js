@@ -62,7 +62,8 @@ router.put(
         await user.save();
       }
 
-      res.send(data, user, { password: 0 });
+      // res.send(data, user, { password: 0 });
+      res.status(200).send();
     } catch (err) {
       console.log(err.message);
       return res.status(422).send(err.message);
@@ -84,7 +85,7 @@ router.get("/", requireAuth, async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAuth, async (req, res) => {
   const { id } = req.params;
 
   try {
