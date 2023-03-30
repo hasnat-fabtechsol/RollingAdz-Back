@@ -8,61 +8,84 @@ const requireAuth = require("../../middlewares/requireAuth");
 
 const router = express.Router();
 
-// Update or create vehicle owner registration data
 router.put(
   "/",
-  requireAuth,
   upload.fields([
     { name: "img", maxCount: 1 },
     { name: "profile_image", maxCount: 1 },
   ]),
-  async (req, res, next) => {
+  requireAuth,
+  async (req, res) => {
     try {
-      const { _id } = req.user;
-      let updateData = {};
+      var updateData = {};
+      for (let [key, value] of Object.entries(req.body)) {
+        if (value) updateData = { ...updateData, [key]: value };
+      }
+
       if (req.files) {
         for (let [key, value] of Object.entries(req.files)) {
           let result = await uploadFile(value[0]?.path);
           updateData = { ...updateData, [key]: result };
         }
       }
-      const register = await VehiclesOwnerModel.findOne({ user: _id }).populate(
-        "user"
-      );
-      if (register) {
-        register.set({
-          ...req.body,
-          user_images: updateData,
-          user: _id,
-        });
-        await register.save();
-        res.send(register.toJSON({ password: 0 }));
+      var data;
+      var user;
+      var oldData = await VehiclesOwnerModel.findOne({ user: req.user._id });
+      if (oldData) {
+        data = await VehiclesOwnerModel.findOneAndUpdate(
+          { user: req.user._id },
+          updateData,
+          {
+            new: true,
+          }
+        );
+        user = await User.findOneAndUpdate(
+          { _id: req.user._id },
+          {
+            firstname: data.firstname,
+            lastname: data.lastname,
+            password: data.password,
+          },
+          {
+            new: true,
+          }
+        );
       } else {
-        const owerRegister = new VehiclesOwnerModel({
-          ...req.body,
-          user_images: updateData,
-          user: _id,
+        data = new VehiclesOwnerModel({ ...updateData, user: req.user._id });
+        data.save();
+        user = new User({
+          _id: req.user._id,
+          firstname: updateData.firstname,
+          lastname: updateData.lastname,
+          password: updateData.password,
         });
-        await owerRegister.save();
-        res.send(owerRegister.toJSON({ password: 0 }));
+        await user.save();
       }
+
+      // res.send(data, user, { password: 0 });
+      res.status(200).send();
     } catch (err) {
+      console.log(err.message);
       return res.status(422).send(err.message);
     }
   }
 );
 
 router.get("/", requireAuth, async (req, res) => {
-  var { _id } = req.user;
-  VehiclesOwnerModel.find({ user: _id })
-    .populate("user", { password: 0 })
-    .exec(function (err, vehiclesOwner) {
-      if (err) throw err;
-      res.send(vehiclesOwner);
+  const { _id } = req.user;
+
+  try {
+    const allAccounts = await VehiclesOwnerModel.findOne({
+      user: req.user._id,
     });
+    res.json(allAccounts);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAuth, async (req, res) => {
   const { id } = req.params;
 
   try {

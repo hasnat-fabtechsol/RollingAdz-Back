@@ -13,7 +13,7 @@ router.post("/", requireAuth, async (req, res) => {
       user: _id,
     });
     await vehicleSchedule.save();
-    res.send(vehicleSchedule, { password: 0 });
+    res.status(200).send(vehicleSchedule);
   } catch (err) {
     return res.status(422).send(err.message);
   }
@@ -31,7 +31,19 @@ router.get("/", requireAuth, async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.get("/:id", requireAuth, async (req, res) => {
+  var { id } = req.params;
+
+  VehiclesScheduleModel.findOne({ _id: id })
+    .populate("user", { password: 0 })
+    .exec(function (err, vehiclesOwner) {
+      if (err) throw err;
+      console.log(vehiclesOwner);
+      res.send(vehiclesOwner);
+    });
+});
+
+router.put("/:id", requireAuth, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -52,7 +64,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAuth, async (req, res) => {
   const { id } = req.params;
 
   try {

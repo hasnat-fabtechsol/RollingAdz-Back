@@ -50,7 +50,19 @@ router.get("/", requireAuth, async (req, res) => {
     });
 });
 
-router.put("/:id", async (req, res) => {
+router.get("/:id", requireAuth, async (req, res) => {
+  var { id } = req.params;
+
+  VehiclesDataModel.findOne({ _id: id })
+    .populate("user", { password: 0 })
+    .exec(function (err, vehiclesOwner) {
+      if (err) throw err;
+      console.log(vehiclesOwner);
+      res.send(vehiclesOwner);
+    });
+});
+
+router.put("/:id", requireAuth, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -71,7 +83,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAuth, async (req, res) => {
   const { id } = req.params;
 
   try {

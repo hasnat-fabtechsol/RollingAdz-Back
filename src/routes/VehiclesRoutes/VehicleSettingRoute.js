@@ -5,38 +5,39 @@ const requireAuth = require("../../middlewares/requireAuth");
 const User = mongoose.model("User");
 const router = express.Router();
 
-router.put("/", requireAuth, async (req, res, next) => {
+router.put("/", requireAuth, async (req, res) => {
   try {
-    const { _id } = req.user;
-
-    const register = await VehiclesSettingModel.findOne({
-      user: _id,
-    }).populate("user");
-    if (register) {
-      register.set({
-        ...req.body,
-        user: _id,
-      });
-      await register.save();
-      res.send(register.toJSON({ password: 0 }));
-    } else {
-      const setting = new VehiclesSettingModel({
-        ...req.body,
-        user: _id,
-      });
-      await setting.save();
-      res.send(setting.toJSON({ password: 0 }));
+    var updateData = {};
+    for (let [key, value] of Object.entries(req.body)) {
+      if (value) updateData = { ...updateData, [key]: value };
     }
+    var data;
+    var oldData = await VehiclesSettingModel.findOne({ user: req.user._id });
+    if (oldData) {
+      data = await VehiclesSettingModel.findOneAndUpdate(
+        { user: req.user._id },
+        updateData,
+        {
+          new: true,
+        }
+      );
+    } else {
+      data = new VehiclesSettingModel({ ...updateData, user: req.user._id });
+      data.save();
+    }
+
+    res.send(data);
   } catch (err) {
+    console.log(err.message);
     return res.status(422).send(err.message);
   }
 });
 
 router.get("/", requireAuth, async (req, res) => {
-  const { _id } = req.user;
-
   try {
-    const allAccounts = await VehiclesSettingModel.find({ user: _id });
+    const allAccounts = await VehiclesSettingModel.findOne({
+      user: req.user._id,
+    });
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);
@@ -44,7 +45,7 @@ router.get("/", requireAuth, async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireAuth, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -65,7 +66,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAuth, async (req, res) => {
   const { id } = req.params;
 
   try {

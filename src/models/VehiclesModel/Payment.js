@@ -42,8 +42,7 @@ const VehiclesPaymentSchema = new mongoose.Schema({
     required: true,
   },
   same_driver_licence: {
-    type: String,
-    required: true,
+    type: Boolean,
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,

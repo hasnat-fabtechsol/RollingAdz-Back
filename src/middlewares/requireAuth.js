@@ -13,14 +13,15 @@ module.exports = (req, res, next) => {
   }
 
   const token = authorization.replace('Bearer ', '');
- 
+ console.log(token)
   jwt.verify(token, process.env.TOKEN_SECRET, async (err, payload) => {
+   
     if (err) {
       return res.status(401).send({ error: 'You must be logged in.Middleware' });
     }
 
     const { userId } = payload;
-
+console.log(userId)
     var user = await User.findById(userId);
     if (user==null) {
       return res.status(401).send({ error: 'Invalid Token Provided' });

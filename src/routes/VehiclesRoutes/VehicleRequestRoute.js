@@ -8,10 +8,11 @@ const router = express.Router();
 
 router.post("/", requireAuth, async (req, res) => {
   try {
+    console.log(req.body);
     const { _id } = req.user;
     const vehicleRequest = new vehicleRequestModel({ ...req.body, user: _id });
     await vehicleRequest.save();
-    res.send(vehicleRequest, { password: 0 });
+    res.status(200).send(vehicleRequest);
   } catch (err) {
     return res.status(422).send(err.message);
   }
@@ -28,7 +29,20 @@ router.get("/", requireAuth, async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.get("/:id", requireAuth, async (req, res) => {
+  var { id } = req.params;
+
+  vehicleRequestModel
+    .findOne({ _id: id })
+    .populate("user", { password: 0 })
+    .exec(function (err, vehiclesOwner) {
+      if (err) throw err;
+      console.log(vehiclesOwner);
+      res.send(vehiclesOwner);
+    });
+});
+
+router.put("/:id", requireAuth, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -49,7 +63,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAuth, async (req, res) => {
   const { id } = req.params;
 
   try {
