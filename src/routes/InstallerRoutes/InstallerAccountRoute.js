@@ -43,6 +43,7 @@ router.put("/", requireAuth, async (req, res) => {
         firstname: updateData.firstname,
         lastname: updateData.lastname,
         password: updateData.password,
+        email: updateData.email,
         role: updateData.role,
       });
       await user.save();
