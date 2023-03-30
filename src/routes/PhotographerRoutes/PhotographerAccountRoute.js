@@ -57,7 +57,7 @@ router.put("/", requireAuth, async (req, res) => {
       await user.save();
     }
 
-    res.send(data, user);
+    res.send(data, user,{password:0});
   } catch (err) {
     console.log(err.message);
     return res.status(422).send(err.message);
