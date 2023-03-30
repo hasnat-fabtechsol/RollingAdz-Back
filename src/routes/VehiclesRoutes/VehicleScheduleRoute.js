@@ -13,7 +13,7 @@ router.post("/", requireAuth, async (req, res) => {
       user: _id,
     });
     await vehicleSchedule.save();
-    res.send(vehicleSchedule, { password: 0 });
+    res.status(200).send(vehicleSchedule);
   } catch (err) {
     return res.status(422).send(err.message);
   }

@@ -8,10 +8,11 @@ const router = express.Router();
 
 router.post("/", requireAuth, async (req, res) => {
   try {
+    console.log(req.body);
     const { _id } = req.user;
     const vehicleRequest = new vehicleRequestModel({ ...req.body, user: _id });
     await vehicleRequest.save();
-    res.send(vehicleRequest, { password: 0 });
+    res.status(200).send(vehicleRequest);
   } catch (err) {
     return res.status(422).send(err.message);
   }
