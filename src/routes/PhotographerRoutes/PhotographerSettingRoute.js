@@ -8,10 +8,6 @@ const router = express.Router();
 
 router.put("/", requireAuth, async (req, res) => {
   try {
-    var updateData = {};
-    for (let [key, value] of Object.entries(req.body)) {
-      if (value) updateData = { ...updateData, [key]: value };
-    }
     var data;
     var oldData = await photographerSettingModel.findOne({
       user: req.user._id,
@@ -19,14 +15,14 @@ router.put("/", requireAuth, async (req, res) => {
     if (oldData) {
       data = await photographerSettingModel.findOneAndUpdate(
         { user: req.user._id },
-        updateData,
+        ...req.body,
         {
           new: true,
         }
       );
     } else {
       data = new photographerSettingModel({
-        ...updateData,
+        ...req.body,
         user: req.user._id,
       });
       data.save();

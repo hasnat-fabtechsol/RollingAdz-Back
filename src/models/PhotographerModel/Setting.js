@@ -4,10 +4,12 @@ const SettingSchema = new mongoose.Schema({
   app_notification: {
     type: Boolean,
     required: true,
+    default: false,
   },
   email_notification: {
     type: Boolean,
     required: true,
+    default: false,
   },
   communication: {
     type: Number,
@@ -28,14 +30,17 @@ const SettingSchema = new mongoose.Schema({
   complete_3photo_shoot: {
     type: Boolean,
     required: true,
+    default: false,
   },
   complete_3video_shoot: {
     type: Boolean,
     required: true,
+    default: false,
   },
   multi_vehicle_video: {
     type: Boolean,
     required: true,
+    default: false,
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
