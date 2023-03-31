@@ -12,7 +12,7 @@ router.post(
   "/",
   requireAuth,
   upload.fields([
-    { name: "device_vehicle_info_img", maxCount: 1 },
+    // { name: "device_vehicle_info_img", maxCount: 1 },
     { name: "upload_photo", maxCount: 1 },
     { name: "invoice", maxCount: 1 },
   ]),
@@ -27,8 +27,8 @@ router.post(
         }
       }
       const job = new photographerJobModel({
-        ...req.body,
-        photos: updateData,
+        // ...req.body,
+        ...updateData,
         user: _id,
       });
       await job.save();

@@ -13,7 +13,7 @@ router.post("/", requireAuth, async (req, res) => {
       user: _id,
     });
     await request.save();
-    res.send(request, { password: 0 });
+    res.send(request);
   } catch (err) {
     return res.status(422).send(err.message);
   }
