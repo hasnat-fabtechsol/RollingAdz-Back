@@ -45,6 +45,7 @@ router.put(
             firstname: data.firstname,
             lastname: data.lastname,
             password: data.password,
+            email: data.email,
           },
           {
             new: true,
@@ -53,17 +54,21 @@ router.put(
       } else {
         data = new VehiclesOwnerModel({ ...updateData, user: req.user._id });
         data.save();
-        user = new User({
-          _id: req.user._id,
-          firstname: updateData.firstname,
-          lastname: updateData.lastname,
-          password: updateData.password,
-        });
-        await user.save();
+        user = await User.findOneAndUpdate(
+          { _id: req.user._id },
+          {
+            firstname: data.firstname,
+            lastname: data.lastname,
+            password: data.password,
+            email: data.email,
+          },
+          {
+            new: true,
+          }
+        );
       }
 
-      // res.send(data, user, { password: 0 });
-      res.status(200).send();
+      res.status(200).send(data);
     } catch (err) {
       console.log(err.message);
       return res.status(422).send(err.message);
