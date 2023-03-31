@@ -32,7 +32,7 @@ router.post(
 
 router.get("/", requireAuth, async (req, res) => {
   var { _id } = req.user;
-  InstallerPaymentModel.find({ user: _id })
+  InstallerPaymentModel.findOne({ user: _id })
     .populate("user", { password: 0 })
     .exec(function (err, payment) {
       if (err) throw err;

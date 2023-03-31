@@ -62,9 +62,12 @@ router.get("/", requireAuth, async (req, res) => {
   const { _id } = req.user;
 
   try {
-    const allAccounts = await installerAccountModel.findOne({
-      user: req.user._id,
-    });
+    const allAccounts = await installerAccountModel.findOne(
+      {
+        user: req.user._id,
+      },
+      { password: 0 }
+    );
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);

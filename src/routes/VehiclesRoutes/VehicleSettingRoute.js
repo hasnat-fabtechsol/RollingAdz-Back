@@ -9,16 +9,18 @@ router.put("/", requireAuth, async (req, res) => {
   try {
     var data;
     var oldData = await VehiclesSettingModel.findOne({ user: req.user._id });
+    console.log(req.body, data, oldData, "hgsgfdhjsgaj");
     if (oldData) {
       data = await VehiclesSettingModel.findOneAndUpdate(
         { user: req.user._id },
-        ...req.body,
+        { $set: req.body },
         {
           new: true,
         }
       );
+      console.log(data, "data");
     } else {
-      data = new VehiclesSettingModel({ ...updateData, user: req.user._id });
+      data = new VehiclesSettingModel({ ...req.body, user: req.user._id });
       data.save();
     }
 

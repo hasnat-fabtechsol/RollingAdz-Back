@@ -41,7 +41,7 @@ router.post(
 );
 router.get("/", requireAuth, async (req, res) => {
   var { _id } = req.user;
-  VehiclesDataModel.find({ user: _id })
+  VehiclesDataModel.findOne({ user: _id })
     .populate("user", { password: 0 })
     .exec(function (err, vehiclesOwner) {
       if (err) throw err;

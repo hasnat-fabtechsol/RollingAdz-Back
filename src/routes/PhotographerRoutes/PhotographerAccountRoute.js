@@ -8,10 +8,10 @@ const router = express.Router();
 
 router.put("/", requireAuth, async (req, res) => {
   try {
-    var updateData = {};
-    for (let [key, value] of Object.entries(req.body)) {
-      if (value) updateData = { ...updateData, [key]: value };
-    }
+    // var updateData = {};
+    // for (let [key, value] of Object.entries(req.body)) {
+    //   if (value) updateData = { ...updateData, [key]: value };
+    // }
     var data;
     var oldData = await photographerAccountModel.findOne({
       user: req.user._id,
@@ -24,7 +24,7 @@ router.put("/", requireAuth, async (req, res) => {
     if (oldData) {
       data = await photographerAccountModel.findOneAndUpdate(
         { user: req.user._id },
-        updateData,
+        { $set: req.body },
         {
           new: true,
         }
@@ -70,9 +70,12 @@ router.put("/", requireAuth, async (req, res) => {
 
 router.get("/", requireAuth, async (req, res) => {
   try {
-    const allAccounts = await photographerAccountModel.findOne({
-      user: req.user._id,
-    });
+    const allAccounts = await photographerAccountModel.findOne(
+      {
+        user: req.user._id,
+      },
+      { password: 0 }
+    );
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);

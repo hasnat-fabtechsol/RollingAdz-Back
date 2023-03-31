@@ -32,13 +32,10 @@ router.post(
 
 router.get("/", requireAuth, async (req, res) => {
   var { _id } = req.user;
-  photographerPaymentModel
-    .find({ user: _id })
-    .populate("user", { password: 0 })
-    .exec(function (err, payment) {
-      if (err) throw err;
-      res.send(payment);
-    });
+  photographerPaymentModel.findOne({ user: _id }).exec(function (err, payment) {
+    if (err) throw err;
+    res.send(payment);
+  });
 });
 
 router.put("/:id", async (req, res) => {
