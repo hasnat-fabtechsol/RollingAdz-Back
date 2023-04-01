@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const SettingSchema = new mongoose.Schema({
+const AdvertiserSettingSchema = new mongoose.Schema({
   app_notification: {
     type: Boolean,
     required: true,
@@ -31,4 +31,4 @@ const SettingSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("DesignerSetting", SettingSchema);
+module.exports = mongoose.model("AdvertiserSetting", AdvertiserSettingSchema);

@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const DesignerScheduleModel = mongoose.model("DesignerSchedule");
+const AdvertiserScheduleModel = mongoose.model("AdvertiserSchedule");
 const requireAuth = require("../../middlewares/requireAuth");
 const User = mongoose.model("User");
 
@@ -9,7 +9,7 @@ const router = express.Router();
 router.post("/", requireAuth, async (req, res) => {
   const { _id } = req.user;
   try {
-    const Schedule = new DesignerScheduleModel({
+    const Schedule = new AdvertiserScheduleModel({
       ...req.body,
       user: _id,
     });
@@ -24,7 +24,7 @@ router.get("/", requireAuth, async (req, res) => {
   const { _id } = req.user;
 
   try {
-    const allAccounts = await DesignerScheduleModel.find({ user: _id });
+    const allAccounts = await AdvertiserScheduleModel.find({ user: _id });
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);
@@ -36,7 +36,7 @@ router.put("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await DesignerScheduleModel.findOneAndUpdate(
+    const updatedDoc = await AdvertiserScheduleModel.findOneAndUpdate(
       { _id: id },
       req.body,
       { new: true } // return the updated document
@@ -57,7 +57,7 @@ router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await DesignerScheduleModel.findOneAndDelete({
+    const updatedDoc = await AdvertiserScheduleModel.findOneAndDelete({
       _id: id,
     });
 

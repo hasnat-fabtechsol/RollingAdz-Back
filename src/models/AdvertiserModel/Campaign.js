@@ -21,7 +21,7 @@ const images = {
   ],
 };
 
-const DesignerCampaignSchema = new mongoose.Schema({
+const AdvertiserCampaignSchema = new mongoose.Schema({
   campaign_name: {
     type: String,
     required: true,
@@ -122,4 +122,4 @@ const DesignerCampaignSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("DesignerCampaign", DesignerCampaignSchema);
+module.exports = mongoose.model("AdvertiserCampaign", AdvertiserCampaignSchema);

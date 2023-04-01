@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const InvoiceSchema = new mongoose.Schema({
+const AdvertiserInvoiceSchema = new mongoose.Schema({
   due_date: {
     type: String,
     required: true,
@@ -23,4 +23,4 @@ const InvoiceSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("DesignerInvoices", InvoiceSchema);
+module.exports = mongoose.model("AdvertiserInvoices", AdvertiserInvoiceSchema);

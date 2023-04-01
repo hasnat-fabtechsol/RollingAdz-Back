@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const uploadFile = require("../../components/uploadFile");
 const upload = require("../../middlewares/uploadMulter");
-const DesignerCampaignModel = mongoose.model("DesignerCampaign");
+const AdvertiserCampaignModel = mongoose.model("AdvertiserCampaign");
 const User = mongoose.model("User");
 const requireAuth = require("../../middlewares/requireAuth");
 
@@ -26,11 +26,11 @@ router.post(
           updateData = { ...updateData, [key]: result };
         }
       }
-      const register = await DesignerCampaignModel.findOne({
+      const register = await AdvertiserCampaignModel.findOne({
         user: _id,
       }).populate("user", { password: 0 });
 
-      const owerRegister = new DesignerCampaignModel({
+      const owerRegister = new AdvertiserCampaignModel({
         ...req.body,
         images: updateData,
         user: _id,
@@ -54,7 +54,7 @@ router.get("/", requireAuth, async (req, res) => {
   sortObj[sortField] = sortDirection === "asc" ? 1 : -1;
 
   // Get all campaigns sorted by the specified field and direction
-  DesignerCampaignModel.find({ user: _id })
+  AdvertiserCampaignModel.find({ user: _id })
     .sort(sortObj)
     .exec((err, campaigns) => {
       if (err) {
@@ -70,7 +70,7 @@ router.put("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await DesignerCampaignModel.findOneAndUpdate(
+    const updatedDoc = await AdvertiserCampaignModel.findOneAndUpdate(
       { _id: id },
       req.body,
       { new: true } // return the updated document
@@ -91,7 +91,7 @@ router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await DesignerCampaignModel.findOneAndDelete({
+    const updatedDoc = await AdvertiserCampaignModel.findOneAndDelete({
       _id: id,
     });
 

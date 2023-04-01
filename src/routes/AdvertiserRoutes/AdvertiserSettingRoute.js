@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const DesignerSettingModel = mongoose.model("DesignerSetting");
+const AdvertiserSettingModel = mongoose.model("AdvertiserSetting");
 const requireAuth = require("../../middlewares/requireAuth");
 const User = mongoose.model("User");
 const router = express.Router();
@@ -9,7 +9,7 @@ router.put("/", requireAuth, async (req, res, next) => {
   try {
     const { _id } = req.user;
 
-    const register = await DesignerSettingModel.findOne({
+    const register = await AdvertiserSettingModel.findOne({
       user: _id,
     }).populate("user");
     if (register) {
@@ -20,7 +20,7 @@ router.put("/", requireAuth, async (req, res, next) => {
       await register.save();
       res.send(register.toJSON({ password: 0 }));
     } else {
-      const setting = new DesignerSettingModel({
+      const setting = new AdvertiserSettingModel({
         ...req.body,
         user: _id,
       });
@@ -36,7 +36,7 @@ router.get("/", requireAuth, async (req, res) => {
   const { _id } = req.user;
 
   try {
-    const allAccounts = await DesignerSettingModel.find({ user: _id });
+    const allAccounts = await AdvertiserSettingModel.find({ user: _id });
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);
@@ -48,7 +48,7 @@ router.put("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await DesignerSettingModel.findOneAndUpdate(
+    const updatedDoc = await AdvertiserSettingModel.findOneAndUpdate(
       { _id: id },
       req.body,
       { new: true } // return the updated document
@@ -69,7 +69,7 @@ router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await DesignerSettingModel.findOneAndDelete({
+    const updatedDoc = await AdvertiserSettingModel.findOneAndDelete({
       _id: id,
     });
 

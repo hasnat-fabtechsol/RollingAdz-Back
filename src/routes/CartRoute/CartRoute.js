@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const DesignerInvoicesModel = mongoose.model("DesignerInvoices");
+const CartModel = mongoose.model("Cart");
 const User = mongoose.model("User");
 const requireAuth = require("../../middlewares/requireAuth");
 
@@ -9,21 +9,21 @@ const router = express.Router();
 router.post("/", requireAuth, async (req, res, next) => {
   try {
     const { _id } = req.user;
-    const designerInvoice = new DesignerInvoicesModel({
+    const Cart = new CartModel({
       ...req.body,
       user: _id,
     });
-    await designerInvoice.save();
-    res.send(designerInvoice);
+    await Cart.save();
+    res.send(Cart);
   } catch (err) {
     return res.status(422).send(err.message);
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
   try {
-    const allAccounts = await DesignerInvoicesModel.find({});
-    res.json(allAccounts);
+    const Cart = await CartModel.findOne({ user: req.user._id });
+    res.json(Cart);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
@@ -34,17 +34,17 @@ router.put("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await DesignerInvoicesModel.findOneAndUpdate(
+    const Cart = await CartModel.findOneAndUpdate(
       { _id: id },
       req.body,
       { new: true } // return the updated document
     );
 
-    if (!updatedDoc) {
+    if (!Cart) {
       return res.status(404).json({ message: "Document not found" });
     }
 
-    return res.json(updatedDoc);
+    return res.json(Cart);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error" });
@@ -55,15 +55,15 @@ router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await DesignerInvoicesModel.findOneAndDelete({
+    const Cart = await CartModel.findOneAndDelete({
       _id: id,
     });
 
-    if (!updatedDoc) {
+    if (!Cart) {
       return res.status(404).json({ message: "Document not found" });
     }
 
-    return res.json(updatedDoc);
+    return res.json(Cart);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error" });
