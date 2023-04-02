@@ -21,7 +21,7 @@ router.post("/", requireAuth, async (req, res) => {
 router.get("/", requireAuth, async (req, res) => {
   const { _id } = req.user;
   try {
-    const vehicleRequest = await vehicleRequestModel.find({ user: _id });
+    const vehicleRequest = await vehicleRequestModel.findOne({ user: _id });
     res.json(vehicleRequest);
   } catch (err) {
     console.error(err.message);

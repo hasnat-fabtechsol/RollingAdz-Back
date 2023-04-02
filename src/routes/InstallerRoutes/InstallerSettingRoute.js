@@ -8,16 +8,12 @@ const router = express.Router();
 
 router.put("/", requireAuth, async (req, res) => {
   try {
-    var updateData = {};
-    for (let [key, value] of Object.entries(req.body)) {
-      if (value) updateData = { ...updateData, [key]: value };
-    }
     var data;
     var oldData = await InstallerSettingModel.findOne({ user: req.user._id });
     if (oldData) {
       data = await InstallerSettingModel.findOneAndUpdate(
         { user: req.user._id },
-        updateData,
+        ...req.body,
         {
           new: true,
         }

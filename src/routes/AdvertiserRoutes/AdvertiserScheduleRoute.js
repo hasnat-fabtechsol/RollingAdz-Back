@@ -1,32 +1,20 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const DesignerSettingModel = mongoose.model("DesignerSetting");
+const AdvertiserScheduleModel = mongoose.model("AdvertiserSchedule");
 const requireAuth = require("../../middlewares/requireAuth");
 const User = mongoose.model("User");
+
 const router = express.Router();
 
-router.put("/", requireAuth, async (req, res, next) => {
+router.post("/", requireAuth, async (req, res) => {
+  const { _id } = req.user;
   try {
-    const { _id } = req.user;
-
-    const register = await DesignerSettingModel.findOne({
+    const Schedule = new AdvertiserScheduleModel({
+      ...req.body,
       user: _id,
-    }).populate("user");
-    if (register) {
-      register.set({
-        ...req.body,
-        user: _id,
-      });
-      await register.save();
-      res.send(register.toJSON({ password: 0 }));
-    } else {
-      const setting = new DesignerSettingModel({
-        ...req.body,
-        user: _id,
-      });
-      await setting.save();
-      res.send(setting.toJSON({ password: 0 }));
-    }
+    });
+    await Schedule.save();
+    res.send(Schedule);
   } catch (err) {
     return res.status(422).send(err.message);
   }
@@ -36,8 +24,8 @@ router.get("/", requireAuth, async (req, res) => {
   const { _id } = req.user;
 
   try {
-    const allAccounts = await DesignerSettingModel.find({ user: _id });
-    res.json(allAccounts);
+    const allAccounts = await AdvertiserScheduleModel.findOne({ user: _id });
+    res.send(allAccounts);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
@@ -48,7 +36,7 @@ router.put("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await DesignerSettingModel.findOneAndUpdate(
+    const updatedDoc = await AdvertiserScheduleModel.findOneAndUpdate(
       { _id: id },
       req.body,
       { new: true } // return the updated document
@@ -69,7 +57,7 @@ router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await DesignerSettingModel.findOneAndDelete({
+    const updatedDoc = await AdvertiserScheduleModel.findOneAndDelete({
       _id: id,
     });
 

@@ -28,8 +28,8 @@ router.put("/", requireAuth, async (req, res) => {
         {
           firstname: data.firstname,
           lastname: data.lastname,
-          password: data.password,
-          role: updateData.role,
+          email: data.email,
+          password: data?.password,
         },
         {
           new: true,
@@ -38,17 +38,20 @@ router.put("/", requireAuth, async (req, res) => {
     } else {
       data = new installerAccountModel({ ...updateData, user: req.user._id });
       data.save();
-      user = new User({
-        _id: req.user._id,
-        firstname: updateData.firstname,
-        lastname: updateData.lastname,
-        password: updateData.password,
-        role: updateData.role,
-      });
-      await user.save();
+      user = await User.findOneAndUpdate(
+        { _id: req.user._id },
+        {
+          firstname: data.firstname,
+          lastname: data.lastname,
+          email: data.email,
+          password: data?.password,
+        },
+        {
+          new: true,
+        }
+      );
     }
-
-    res.send(data, user, { password: 0 });
+    res.status(200).send(data);
   } catch (err) {
     console.log(err.message);
     return res.status(422).send(err.message);
@@ -59,9 +62,12 @@ router.get("/", requireAuth, async (req, res) => {
   const { _id } = req.user;
 
   try {
-    const allAccounts = await installerAccountModel.findOne({
-      user: req.user._id,
-    });
+    const allAccounts = await installerAccountModel.findOne(
+      {
+        user: req.user._id,
+      },
+      { password: 0 }
+    );
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);

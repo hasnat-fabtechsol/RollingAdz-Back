@@ -1,20 +1,32 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const DesignerScheduleModel = mongoose.model("DesignerSchedule");
+const AdvertiserSettingModel = mongoose.model("AdvertiserSetting");
 const requireAuth = require("../../middlewares/requireAuth");
 const User = mongoose.model("User");
-
 const router = express.Router();
 
-router.post("/", requireAuth, async (req, res) => {
-  const { _id } = req.user;
+router.put("/", requireAuth, async (req, res, next) => {
   try {
-    const Schedule = new DesignerScheduleModel({
-      ...req.body,
+    const { _id } = req.user;
+
+    const register = await AdvertiserSettingModel.findOne({
       user: _id,
-    });
-    await Schedule.save();
-    res.send(Schedule, { password: 0 });
+    }).populate("user");
+    if (register) {
+      register.set({
+        ...req.body,
+        user: _id,
+      });
+      await register.save();
+      res.status(200).send(register);
+    } else {
+      const setting = new AdvertiserSettingModel({
+        ...req.body,
+        user: _id,
+      });
+      await setting.save();
+      res.status(200).send(setting);
+    }
   } catch (err) {
     return res.status(422).send(err.message);
   }
@@ -24,7 +36,7 @@ router.get("/", requireAuth, async (req, res) => {
   const { _id } = req.user;
 
   try {
-    const allAccounts = await DesignerScheduleModel.find({ user: _id });
+    const allAccounts = await AdvertiserSettingModel.findOne({ user: _id });
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);
@@ -36,7 +48,7 @@ router.put("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await DesignerScheduleModel.findOneAndUpdate(
+    const updatedDoc = await AdvertiserSettingModel.findOneAndUpdate(
       { _id: id },
       req.body,
       { new: true } // return the updated document
@@ -57,7 +69,7 @@ router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await DesignerScheduleModel.findOneAndDelete({
+    const updatedDoc = await AdvertiserSettingModel.findOneAndDelete({
       _id: id,
     });
 

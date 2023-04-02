@@ -34,7 +34,7 @@ const InstallerAccountSchema = new mongoose.Schema({
     required: true,
   },
   phone_number: {
-    type: Number,
+    type: String,
     required: true,
   },
   mobile_installer: {

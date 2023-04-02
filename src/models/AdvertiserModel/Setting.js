@@ -1,29 +1,31 @@
 const mongoose = require("mongoose");
 
-const SettingSchema = new mongoose.Schema({
+const AdvertiserSettingSchema = new mongoose.Schema({
   app_notification: {
     type: Boolean,
     required: true,
+    default: false,
   },
   email_notification: {
     type: Boolean,
     required: true,
+    default: false,
   },
   push_notification: {
     type: Boolean,
     required: true,
+    default: false,
   },
   email_report: {
     type: Boolean,
     required: true,
+    default: false,
   },
   primary_color: {
     type: String,
-    required: true,
   },
   secondery_color: {
     type: String,
-    required: true,
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -31,4 +33,4 @@ const SettingSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("DesignerSetting", SettingSchema);
+module.exports = mongoose.model("AdvertiserSetting", AdvertiserSettingSchema);

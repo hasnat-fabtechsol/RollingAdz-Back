@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const DesignerAccountModel = mongoose.model("DesignerAccount");
+const AdvertiserAccountModel = mongoose.model("AdvertiserAccount");
 const User = mongoose.model("User");
 const requireAuth = require("../../middlewares/requireAuth");
 
@@ -8,17 +8,14 @@ const router = express.Router();
 
 router.put("/", requireAuth, async (req, res) => {
   try {
-    var updateData = {};
-    for (let [key, value] of Object.entries(req.body)) {
-      if (value) updateData = { ...updateData, [key]: value };
-    }
     var data;
     var user;
-    var oldData = await DesignerAccountModel.findOne({ user: req.user._id });
+    console.log(req.body, "hhj");
+    var oldData = await AdvertiserAccountModel.findOne({ user: req.user._id });
     if (oldData) {
-      data = await DesignerAccountModel.findOneAndUpdate(
+      data = await AdvertiserAccountModel.findOneAndUpdate(
         { user: req.user._id },
-        updateData,
+        { $set: req.body },
         {
           new: true,
         }
@@ -28,27 +25,34 @@ router.put("/", requireAuth, async (req, res) => {
         {
           firstname: data.firstname,
           lastname: data.lastname,
+          email: data.email,
           password: data.password,
-          role: updateData.role,
         },
         {
           new: true,
         }
       );
     } else {
-      data = new DesignerAccountModel({ ...updateData, user: req.user._id });
-      data.save();
-      user = new User({
-        _id: req.user._id,
-        firstname: updateData.firstname,
-        lastname: updateData.lastname,
-        password: updateData.password,
-        role: updateData.role,
+      data = new AdvertiserAccountModel({
+        ...req.body,
+        user: req.user._id,
       });
-      await user.save();
+      data.save();
+      user = await User.findOneAndUpdate(
+        { _id: req.user._id },
+        {
+          firstname: data.firstname,
+          lastname: data.lastname,
+          password: data.password,
+          email: data.email,
+        },
+        {
+          new: true,
+        }
+      );
     }
-
-    res.send(data, user, { password: 0 });
+    console.log(data, "res");
+    res.status(200).send(data);
   } catch (err) {
     console.log(err.message);
     return res.status(422).send(err.message);
@@ -57,9 +61,10 @@ router.put("/", requireAuth, async (req, res) => {
 
 router.get("/", requireAuth, async (req, res) => {
   try {
-    const allAccounts = await DesignerAccountModel.findOne({
+    const allAccounts = await AdvertiserAccountModel.findOne({
       user: req.user._id,
     });
+    console.log(allAccounts);
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);
@@ -71,7 +76,7 @@ router.put("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await DesignerAccountModel.findOneAndUpdate(
+    const updatedDoc = await AdvertiserAccountModel.findOneAndUpdate(
       { _id: id },
       req.body,
       { new: true } // return the updated document
@@ -92,7 +97,7 @@ router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedDoc = await DesignerAccountModel.findOneAndDelete({
+    const updatedDoc = await AdvertiserAccountModel.findOneAndDelete({
       _id: id,
     });
 

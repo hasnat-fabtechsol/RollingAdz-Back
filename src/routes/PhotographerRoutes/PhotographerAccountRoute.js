@@ -8,10 +8,10 @@ const router = express.Router();
 
 router.put("/", requireAuth, async (req, res) => {
   try {
-    var updateData = {};
-    for (let [key, value] of Object.entries(req.body)) {
-      if (value) updateData = { ...updateData, [key]: value };
-    }
+    // var updateData = {};
+    // for (let [key, value] of Object.entries(req.body)) {
+    //   if (value) updateData = { ...updateData, [key]: value };
+    // }
     var data;
     var oldData = await photographerAccountModel.findOne({
       user: req.user._id,
@@ -24,7 +24,7 @@ router.put("/", requireAuth, async (req, res) => {
     if (oldData) {
       data = await photographerAccountModel.findOneAndUpdate(
         { user: req.user._id },
-        updateData,
+        { $set: req.body },
         {
           new: true,
         }
@@ -35,7 +35,7 @@ router.put("/", requireAuth, async (req, res) => {
           firstname: data.firstname,
           lastname: data.lastname,
           password: data.password,
-          role: updateData.role,
+          email: data.email,
         },
         {
           new: true,
@@ -47,17 +47,21 @@ router.put("/", requireAuth, async (req, res) => {
         user: req.user._id,
       });
       data.save();
-      user = new User({
-        _id: req.user._id,
-        firstname: updateData.firstname,
-        lastname: updateData.lastname,
-        password: updateData.password,
-        role: updateData.role,
-      });
-      await user.save();
+      user = await User.findOneAndUpdate(
+        { _id: req.user._id },
+        {
+          firstname: data.firstname,
+          lastname: data.lastname,
+          password: data.password,
+          email: data.email,
+        },
+        {
+          new: true,
+        }
+      );
     }
 
-    res.send(data, user,{password:0});
+    res.status(200).send(data);
   } catch (err) {
     console.log(err.message);
     return res.status(422).send(err.message);
@@ -66,9 +70,12 @@ router.put("/", requireAuth, async (req, res) => {
 
 router.get("/", requireAuth, async (req, res) => {
   try {
-    const allAccounts = await photographerAccountModel.findOne({
-      user: req.user._id,
-    });
+    const allAccounts = await photographerAccountModel.findOne(
+      {
+        user: req.user._id,
+      },
+      { password: 0 }
+    );
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);

@@ -42,9 +42,7 @@ router.post(
 
 router.get("/", requireAuth, async (req, res) => {
   try {
-    const allAccounts = await InstallerJobModel.find({}).populate("user", {
-      password: 0,
-    });
+    const allAccounts = await InstallerJobModel.findOne({ user: req.user._id });
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);

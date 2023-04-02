@@ -12,7 +12,7 @@ const event = new mongoose.Schema({
   },
 });
 
-const ScheduleSchema = new mongoose.Schema({
+const AdvertiserScheduleSchema = new mongoose.Schema({
   events: [event],
   campaign_type: {
     type: String,
@@ -24,4 +24,4 @@ const ScheduleSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("PhotographerSchedule", ScheduleSchema);
+module.exports = mongoose.model("AdvertiserSchedule", AdvertiserScheduleSchema);

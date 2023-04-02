@@ -40,9 +40,11 @@ router.post(
 );
 
 router.get("/", requireAuth, async (req, res) => {
+  var { _id } = req.user;
+
   try {
-    const allAccounts = await photographerJobModel.find({}).populate("user", {
-      password: 0,
+    const allAccounts = await photographerJobModel.findOne({
+      user: _id,
     });
     res.json(allAccounts);
   } catch (err) {

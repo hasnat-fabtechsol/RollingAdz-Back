@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const DesignerAccountSchema = new mongoose.Schema({
+const AdvertiserAccountSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
@@ -30,7 +30,7 @@ const DesignerAccountSchema = new mongoose.Schema({
     required: true,
   },
   phone_number: {
-    type: Number,
+    type: String,
     required: true,
   },
   account_payable_firstname: {
@@ -46,12 +46,20 @@ const DesignerAccountSchema = new mongoose.Schema({
     required: true,
   },
   account_payable_phone_number: {
-    type: Number,
+    type: String,
     required: true,
   },
   access_email: {
     type: String,
-    requied: true,
+  },
+  access_role: {
+    type: String,
+  },
+  not_access_email: {
+    type: String,
+  },
+  not_access_role: {
+    type: String,
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -59,4 +67,4 @@ const DesignerAccountSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("DesignerAccount", DesignerAccountSchema);
+module.exports = mongoose.model("AdvertiserAccount", AdvertiserAccountSchema);

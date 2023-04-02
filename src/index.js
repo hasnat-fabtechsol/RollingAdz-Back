@@ -1,9 +1,8 @@
-
 const requireDir = require("require-dir");
 requireDir("./models", { recurse: true });
 
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument=require("./config/swagger-output.json")
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./config/swagger-output.json");
 // vehicle routes
 const owerRegisterRoute = require("./routes/VehiclesRoutes/VehicleOwnerAccountRoute");
 const vehicleData = require("./routes/VehiclesRoutes/VehicleDataRoute");
@@ -21,13 +20,13 @@ const installerRequestRoue = require("./routes/InstallerRoutes/InstallerRequestR
 const installerScheduleRoute = require("./routes/InstallerRoutes/InstallerScheduleRoute");
 const installerSettingRoute = require("./routes/InstallerRoutes/InstallerSettingRoute");
 
-// Designer Routes
+// Advertiser Routes
 
-const designerAccountRoute = require("./routes/DesignerRoutes/DesignerAccountRoute");
-const designerCompaignRoute = require("./routes/DesignerRoutes/DesignerCompaignRoute");
-const designerInvoiceRoute = require("./routes/DesignerRoutes/DesignerInvoiceRoute");
-const designerScheduleRoute = require("./routes/DesignerRoutes/DesignerScheduleRoute");
-const designerSettingRoute = require("./routes/DesignerRoutes/DesignerSettingRoute");
+const AdvertiserAccountRoute = require("./routes/AdvertiserRoutes/AdvertiserAccountRoute");
+const AdvertiserCompaignRoute = require("./routes/AdvertiserRoutes/AdvertiserCompaignRoute");
+const AdvertiserInvoiceRoute = require("./routes/AdvertiserRoutes/AdvertiserInvoiceRoute");
+const AdvertiserScheduleRoute = require("./routes/AdvertiserRoutes/AdvertiserScheduleRoute");
+const AdvertiserSettingRoute = require("./routes/AdvertiserRoutes/AdvertiserSettingRoute");
 
 // Photographer routes
 
@@ -37,6 +36,10 @@ const photographerPaymentRoute = require("./routes/PhotographerRoutes/Photograph
 const photographerRequestRoute = require("./routes/PhotographerRoutes/PhotographerRequestRoute");
 const photographerScheduleRoute = require("./routes/PhotographerRoutes/PhotographerScheduleRoute");
 const photographerSettingRoute = require("./routes/PhotographerRoutes/PhotographerSettingRoute");
+
+// Cart Route
+
+const cartRoute = require("./routes/CartRoute/CartRoute");
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -49,8 +52,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("src/images"));
 app.use(express.urlencoded({ extended: true }));
-if(process.env.API_DEBUG){
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+if (process.env.API_DEBUG) {
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 }
 app.use("/user", authRoutes);
 
@@ -72,12 +75,12 @@ app.use("/installerRequest", installerRequestRoue);
 app.use("/installerSchedule", installerScheduleRoute);
 app.use("/installerSetting", installerSettingRoute);
 
-// designer routes app
-app.use("/designerAccount", designerAccountRoute);
-app.use("/designerCompaign", designerCompaignRoute);
-app.use("/designerInvoice", designerInvoiceRoute);
-app.use("/designerSchedule", designerScheduleRoute);
-app.use("/designerSetting", designerSettingRoute);
+// Addvertiser routes app
+app.use("/advertiserAccount", AdvertiserAccountRoute);
+app.use("/advertiserCompaign", AdvertiserCompaignRoute);
+app.use("/advertiserInvoice", AdvertiserInvoiceRoute);
+app.use("/advertiserSchedule", AdvertiserScheduleRoute);
+app.use("/advertiserSetting", AdvertiserSettingRoute);
 
 /// photographer routes use
 
@@ -87,6 +90,10 @@ app.use("/photographerRequest", photographerRequestRoute);
 app.use("/photographerPayment", photographerPaymentRoute);
 app.use("/photographerSchedule", photographerScheduleRoute);
 app.use("/photographerSetting", photographerSettingRoute);
+
+// Cart Route use
+
+app.use("/addCart", cartRoute);
 
 app.use("/", (req, res) => {
   res.send("Working");
