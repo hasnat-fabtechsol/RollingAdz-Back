@@ -40,6 +40,7 @@ const photographerSettingRoute = require("./routes/PhotographerRoutes/Photograph
 // Cart Route
 
 const cartRoute = require("./routes/CartRoute/CartRoute");
+const profileRoute = require("./routes/UserProileRoute/UserProfileRoute");
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -94,7 +95,7 @@ app.use("/photographerSetting", photographerSettingRoute);
 // Cart Route use
 
 app.use("/addCart", cartRoute);
-
+app.use("/profile", profileRoute);
 app.use("/", (req, res) => {
   res.send("Working");
 });
