@@ -18,14 +18,14 @@ router.put("/", requireAuth, async (req, res, next) => {
         user: _id,
       });
       await register.save();
-      res.send(register.toJSON({ password: 0 }));
+      res.status(200).send(register);
     } else {
       const setting = new AdvertiserSettingModel({
         ...req.body,
         user: _id,
       });
       await setting.save();
-      res.send(setting.toJSON({ password: 0 }));
+      res.status(200).send(setting);
     }
   } catch (err) {
     return res.status(422).send(err.message);
@@ -36,7 +36,7 @@ router.get("/", requireAuth, async (req, res) => {
   const { _id } = req.user;
 
   try {
-    const allAccounts = await AdvertiserSettingModel.find({ user: _id });
+    const allAccounts = await AdvertiserSettingModel.findOne({ user: _id });
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);

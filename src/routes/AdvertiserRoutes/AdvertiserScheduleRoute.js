@@ -14,7 +14,7 @@ router.post("/", requireAuth, async (req, res) => {
       user: _id,
     });
     await Schedule.save();
-    res.send(Schedule, { password: 0 });
+    res.send(Schedule);
   } catch (err) {
     return res.status(422).send(err.message);
   }
@@ -24,8 +24,8 @@ router.get("/", requireAuth, async (req, res) => {
   const { _id } = req.user;
 
   try {
-    const allAccounts = await AdvertiserScheduleModel.find({ user: _id });
-    res.json(allAccounts);
+    const allAccounts = await AdvertiserScheduleModel.findOne({ user: _id });
+    res.send(allAccounts);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");

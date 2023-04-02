@@ -46,7 +46,7 @@ const AdvertiserAccountSchema = new mongoose.Schema({
     required: true,
   },
   account_payable_phone_number: {
-    type: Number,
+    type: String,
     required: true,
   },
   access_email: {

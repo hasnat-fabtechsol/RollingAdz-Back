@@ -51,7 +51,7 @@ router.put("/", requireAuth, async (req, res) => {
         }
       );
     }
-
+    console.log(data, "res");
     res.status(200).send(data);
   } catch (err) {
     console.log(err.message);
@@ -64,6 +64,7 @@ router.get("/", requireAuth, async (req, res) => {
     const allAccounts = await AdvertiserAccountModel.findOne({
       user: req.user._id,
     });
+    console.log(allAccounts);
     res.json(allAccounts);
   } catch (err) {
     console.error(err.message);
