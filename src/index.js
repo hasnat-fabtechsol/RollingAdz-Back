@@ -42,12 +42,19 @@ const photographerSettingRoute = require("./routes/PhotographerRoutes/Photograph
 const cartRoute = require("./routes/CartRoute/CartRoute");
 const profileRoute = require("./routes/UserProileRoute/UserProfileRoute");
 
+//chat Route
+
+const UploadRoute = require("./routes/ChatRoutes/UploadRoute");
+const ChatRoute = require("./routes/ChatRoutes/ChatRoute");
+const MessageRoute = require("./routes/ChatRoutes/MessageRoute");
+
 const express = require("express");
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/authRoutes");
 const dotenv = require("dotenv").config();
 const Populate = require("./components/pupulate");
 const cors = require("cors");
+const socket = require("./socket/socket.js");
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -92,6 +99,12 @@ app.use("/photographerPayment", photographerPaymentRoute);
 app.use("/photographerSchedule", photographerScheduleRoute);
 app.use("/photographerSetting", photographerSettingRoute);
 
+// chat route use
+
+app.use("/chat", ChatRoute);
+app.use("/upload", UploadRoute);
+app.use("/message", MessageRoute);
+
 // Cart Route use
 
 app.use("/addCart", cartRoute);
@@ -101,6 +114,7 @@ app.use("/", (req, res) => {
 });
 // Populate()
 
+socket();
 const mongoUri = process.env.DB_URL;
 if (!mongoUri) {
   throw new Error(

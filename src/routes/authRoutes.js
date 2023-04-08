@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.post("/register", async (req, res) => {
   try {
+    console.log(req.body);
     const user = new User(req.body);
     await user.save();
 
