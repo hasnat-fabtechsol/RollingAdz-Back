@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const { Server } = require("socket.io");
 dotenv.config();
-const secret = process.env.JWTKEY;
+const secret = process.env.TOKEN_SECRET;
 const io = new Server(8800, {
   cors: {
     origin: "http://localhost:3000",
