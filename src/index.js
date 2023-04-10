@@ -44,7 +44,6 @@ const profileRoute = require("./routes/UserProileRoute/UserProfileRoute");
 
 //chat Route
 
-const UploadRoute = require("./routes/ChatRoutes/UploadRoute");
 const ChatRoute = require("./routes/ChatRoutes/ChatRoute");
 const MessageRoute = require("./routes/ChatRoutes/MessageRoute");
 
@@ -102,7 +101,6 @@ app.use("/photographerSetting", photographerSettingRoute);
 // chat route use
 
 app.use("/chat", ChatRoute);
-app.use("/upload", UploadRoute);
 app.use("/message", MessageRoute);
 
 // Cart Route use
