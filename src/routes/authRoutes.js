@@ -58,6 +58,16 @@ router.get("/user-info", requireAuth, async (req, res) => {
   }
 });
 
+router.get("/all-users", requireAuth, async (req, res) => {
+  try {
+    const result = await User.find().select("firstname lastname");
+    console.log("---------------------", result);
+    res.status(200).send(result);
+  } catch (error) {
+    return res.status(422).send({ error: "Not Found" });
+  }
+});
+
 router.get("/:id", requireAuth, async (req, res) => {
   const id = req.params.id;
 
