@@ -15,7 +15,7 @@ router.post(
   async (req, res, next) => {
     try {
       const { _id } = req.user;
-      const imageUrl = await uploadFile(req.file.path);
+      const imageUrl = await uploadFile(req.file);
       req.body.w9_document = imageUrl;
       const vehiclePayemnt = new VehiclePaymentModel({
         ...req.body,

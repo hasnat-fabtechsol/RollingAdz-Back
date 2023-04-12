@@ -16,7 +16,7 @@ router.post(
     const { _id } = req.user;
 
     try {
-      const imageUrl = await uploadFile(req.file.path);
+      const imageUrl = await uploadFile(req.file);
       req.body.w9_document = imageUrl;
       const installerPayment = new InstallerPaymentModel({
         ...req.body,

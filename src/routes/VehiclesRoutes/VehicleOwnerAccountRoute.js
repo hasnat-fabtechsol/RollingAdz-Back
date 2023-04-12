@@ -24,7 +24,7 @@ router.put(
 
       if (req.files) {
         for (let [key, value] of Object.entries(req.files)) {
-          let result = await uploadFile(value[0]?.path);
+          let result = await uploadFile(value[0]);
           updateData = { ...updateData, [key]: result };
         }
       }

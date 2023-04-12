@@ -14,13 +14,18 @@ router.post("/", upload.single("file"), requireAuth, async (req, res, next) => {
     const { chatId, senderId, text, file } = req.body;
     if (req.file) {
       const { mimetype } = req.file;
-      let result = await uploadFile(req.file?.path);
+      console.log(req.file);
+      let result = await uploadFile(req.file);
+
+      let file_type = "other";
+      if (mimetype.startsWith("image/")) file_type = "image";
+      else if (mimetype.startsWith("video/")) file_type = "video";
 
       const message = new messageModel({
         chatId,
         senderId,
         file: result,
-        file_type: mimetype,
+        file_type,
       });
 
       const data = await message.save();
