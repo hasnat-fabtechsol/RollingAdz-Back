@@ -60,7 +60,7 @@ router.get("/user-info", requireAuth, async (req, res) => {
 
 router.get("/all-users", requireAuth, async (req, res) => {
   try {
-    const result = await User.find().select("firstname lastname");
+    const result = await User.find().select("firstname lastname userimage");
     console.log("---------------------", result);
     res.status(200).send(result);
   } catch (error) {

@@ -61,6 +61,13 @@ const socketServer = () => {
     });
 
     // send message to a specific user
+    socket.on("new-chat", (data) => {
+      const { receiverId } = data;
+      const user = activeUsers.find((user) => user.userId === receiverId);
+      if (user) {
+        io.to(user.socketId).emit("new-chat", data);
+      }
+    });
     socket.on("send-message", (data) => {
       const { receiverId } = data;
       const user = activeUsers.find((user) => user.userId === receiverId);
