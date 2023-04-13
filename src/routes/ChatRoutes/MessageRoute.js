@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post("/", upload.single("file"), requireAuth, async (req, res, next) => {
   try {
-    const { chatId, senderId, text, file } = req.body;
+    const { chatId, senderId, text, file, status } = req.body;
     if (req.file) {
       const { mimetype } = req.file;
       console.log(req.file);
@@ -26,6 +26,7 @@ router.post("/", upload.single("file"), requireAuth, async (req, res, next) => {
         senderId,
         file: result,
         file_type,
+        status,
       });
 
       const data = await message.save();
@@ -35,12 +36,31 @@ router.post("/", upload.single("file"), requireAuth, async (req, res, next) => {
         chatId,
         senderId,
         text,
+        status,
       });
       const result = await message.save();
       res.status(200).json(result);
     }
   } catch (error) {
     res.status(500).json(error);
+  }
+});
+
+router.put("/:chatId", requireAuth, async (req, res) => {
+  const { chatId } = req.params;
+  console.log(chatId, "------chatdi------");
+  try {
+    const result = await MessageModel.find({ chatId });
+    const ids = result.map((i) => i._id);
+    const response = await MessageModel.updateMany(
+      { _id: { $in: ids } },
+      { status: "seen" }
+    );
+    console.log(response, "--------res---------");
+    res.status(200).send(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
   }
 });
 
