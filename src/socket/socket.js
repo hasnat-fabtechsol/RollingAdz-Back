@@ -68,6 +68,13 @@ const socketServer = () => {
         io.to(user.socketId).emit("new-chat", data);
       }
     });
+    socket.on("refresh-chat", (data) => {
+      const { senderId } = data;
+      const user = activeUsers.find((user) => user.userId === senderId);
+      if (user) {
+        io.to(user.socketId).emit("refresh-chat", data);
+      }
+    });
     socket.on("send-message", (data) => {
       const { receiverId } = data;
       const user = activeUsers.find((user) => user.userId === receiverId);

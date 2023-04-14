@@ -14,7 +14,6 @@ router.post("/", upload.single("file"), requireAuth, async (req, res, next) => {
     const { chatId, senderId, text, file, status } = req.body;
     if (req.file) {
       const { mimetype } = req.file;
-      console.log(req.file);
       let result = await uploadFile(req.file);
 
       let file_type = "other";
@@ -48,16 +47,18 @@ router.post("/", upload.single("file"), requireAuth, async (req, res, next) => {
 
 router.put("/:chatId", requireAuth, async (req, res) => {
   const { chatId } = req.params;
-  console.log(chatId, "------chatdi------");
+  const { userId } = req.body;
   try {
     const result = await MessageModel.find({ chatId });
-    const ids = result.map((i) => i._id);
+    const ids = result.filter((i) => i.senderId != userId);
     const response = await MessageModel.updateMany(
       { _id: { $in: ids } },
-      { status: "seen" }
+      { status: "seen" },
+      { updated: true }
     );
-    console.log(response, "--------res---------");
-    res.status(200).send(response);
+    const updatedData = await MessageModel.find({ chatId });
+
+    res.status(200).send(updatedData);
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
@@ -71,6 +72,17 @@ router.get("/:chatId", requireAuth, async (req, res, next) => {
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json(error);
+  }
+});
+
+router.get("/", requireAuth, async (req, res) => {
+  try {
+    const allMessages = await MessageModel.find();
+    const result = allMessages.filter((message) => message.status !== "seen");
+    res.status(200).send(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
   }
 });
 
